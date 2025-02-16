@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ASL (Aisat Super League) Website
+
+This is the official website for the **Aisat Super League (ASL)**, built with [Next.js](https://nextjs.org), [Flask](https://flask.palletsprojects.com/), and [Tailwind CSS](https://tailwindcss.com/). The ASL website provides real-time match data, rankings, upcoming fixtures, player stats, and a fantasy league.
+
+![ASL Banner](https://source.unsplash.com/featured/?football,soccer)
+
+## Features
+
+- **Live Match Updates**: Real-time scores, goal scorers, and match events.
+- **Rankings & Stats**: Player and team performance tracking.
+- **Fantasy League**: Create and manage your dream team.
+- **Admin Panel**: Manage teams, players, and matches.
+- **Authentication**: Secure login/signup with Supabase.
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/asl-1011/asl_aisat.git
+cd asl_aisat
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+npm install # or yarn install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Set Up Environment Variables
+
+Create a `.env.local` file in the root directory and configure the necessary environment variables:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=''
+SUPABASE_SERVICE_ROLE_KEY=
+JWT_SECRET=your-secret-key
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+AES_SECRET_KEY=2d2a1d4c9e8b7f6d5a0c3b1e4d2f9a8e7c6b5d4a1f0e9c8b7a6d5c4b3e2f1a0d
+AES_SECRET_IV=op1e2d3c4b5a69788c9e0f1a2b3c4d5e6
+```
+
+Make sure your Supabase keys are handled securely and **never exposed** to the frontend.
+
+### 4. Run the Development Server
+
+```bash
+npm run dev  # or yarn dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the project.
+
+## Deployment
+
+The ASL website is hosted on **[asl.1011.cloud](https://asl.1011.cloud)**. You can also explore more projects on **[1011.cloud](https://1011.cloud)**.
+
+The recommended platform for deploying this project is **Vercel**. You can deploy it by clicking the button below:
+
+[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new)
+
+Alternatively, you can deploy on your preferred platform using Docker, Netlify, or DigitalOcean.
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+- [Next.js Documentation](https://nextjs.org/docs)
+- [ASL Website Guide](#)
+- [Fantasy League Rules](#)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Screenshots
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+![Live Match](https://source.unsplash.com/featured/?soccer,stadium)
 
-## Deploy on Vercel
+Enjoy building the ASL experience!
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
