@@ -1,15 +1,14 @@
 import mongoose from "mongoose";
 
 const MatchSchema = new mongoose.Schema({
-  team1: { type: String, required: true },
-  team2: { type: String, required: true },
-  team1Logo: { type: String, required: true },
-  team2Logo: { type: String, required: true },
-  score: { type: String, default: "" },
-  status: { type: String, required: true, enum: ["live", "recent", "upcoming"] },
-  description: { type: String, required: true },
-  playersTeam1: [{ type: mongoose.Schema.Types.ObjectId, ref: "Player" }], // Players of Team 1
-  playersTeam2: [{ type: mongoose.Schema.Types.ObjectId, ref: "Player" }], // Players of Team 2
+  team1: { type: mongoose.Schema.Types.ObjectId, ref: "Team", required: true },
+  team2: { type: mongoose.Schema.Types.ObjectId, ref: "Team", required: true },
+  team1_score: { type: Number, default: 0 },
+  team2_score: { type: Number, default: 0 },
+  status: { type: String, required: true },
+  description: { type: String },
+  playersTeam1: [{ type: mongoose.Schema.Types.ObjectId, ref: "Player" }],
+  playersTeam2: [{ type: mongoose.Schema.Types.ObjectId, ref: "Player" }],
 });
 
 export default mongoose.models.Match || mongoose.model("Match", MatchSchema);

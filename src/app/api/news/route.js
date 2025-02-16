@@ -1,31 +1,29 @@
 "use server";
 
 import { NextResponse } from "next/server";
+import { connectDB } from "@/lib/mongodb";
+import News from "@/models/News";
 
+// 📌 GET: Fetch all news (Public Read-Only)
 export async function GET() {
-  const newsData = [
-    {
-      id: 1,
-      imageUrl:
-        "https://images.unsplash.com/photo-1600250395178-40fe752e5189?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
-      title: "Championship Finals Approaching",
-      description: "Get ready for the most anticipated match of the season",
-    },
-    {
-      id: 2,
-      imageUrl:
-        "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
-      title: "New Training Facility Opening",
-      description: "State-of-the-art facility to enhance player development",
-    },
-    {
-      id: 3,
-      imageUrl:
-        "https://images.unsplash.com/photo-1517466787929-bc90951d0974?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
-      title: "Youth Academy Success",
-      description: "Local talents showing promising results",
-    },
-  ];
+  try {
+    await connectDB();
+    const news = await News.find().sort({ createdAt: -1 });
 
-  return NextResponse.json(newsData);
+    return NextResponse.json(news.length ? news : { message: "No news available" }, {
+      status: 200,
+      headers: { 
+        "Access-Control-Allow-Origin": "*", // Public API
+        "Cache-Control": "public, max-age=60" // Cache for 1 minute
+      }
+    });
+  } catch (error) {
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
+
+// 📌 Block all write operations
+export async function POST() { return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 }); }
+export async function PUT() { return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 }); }
+export async function DELETE() { return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 }); }
+export async function PATCH() { return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 }); }

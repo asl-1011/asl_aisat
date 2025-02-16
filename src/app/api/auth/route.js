@@ -54,6 +54,7 @@ export async function POST(req) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
       path: "/",
+      maxAge: 60 * 60 * 24 * 7,
     });
 
     cookies().set("refresh_token", encryptedRefreshToken, {
@@ -61,6 +62,7 @@ export async function POST(req) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
       path: "/",
+      maxAge: 60 * 60 * 24 * 7,
     });
 
     return NextResponse.json({ success: true, message: "Login successful" });

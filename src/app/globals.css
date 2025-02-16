@@ -19,3 +19,7 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+.lucide-chevron-down {
+  stroke: #8b5cf6; /* Purple color */
+}
+
