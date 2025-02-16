@@ -1,36 +1,51 @@
-# ASL (Aisat Super League) Website
-
-This is the official website for the **Aisat Super League (ASL)**, built with [Next.js](https://nextjs.org), [Flask](https://flask.palletsprojects.com/), and [Tailwind CSS](https://tailwindcss.com/). The ASL website provides real-time match data, rankings, upcoming fixtures, player stats, and a fantasy league.
+# ⚽ ASL (Aisat Super League) Website 🏆
 
 ![ASL Banner](https://source.unsplash.com/featured/?football,soccer)
 
-## Features
+[![Website](https://img.shields.io/badge/Website-asl.1011.cloud-blue?style=for-the-badge&logo=vercel)](https://asl.1011.cloud)
+[![Deploy](https://img.shields.io/badge/Deploy-Vercel-000000?style=for-the-badge&logo=vercel)](https://vercel.com/new)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](#)
 
-- **Live Match Updates**: Real-time scores, goal scorers, and match events.
-- **Rankings & Stats**: Player and team performance tracking.
-- **Fantasy League**: Create and manage your dream team.
-- **Admin Panel**: Manage teams, players, and matches.
-- **Authentication**: Secure login/signup with Supabase.
+> **Experience football like never before!** 🏅 **Aisat Super League (ASL)** is a cutting-edge platform providing real-time match updates, player stats, and an interactive fantasy league. Built with **Next.js, Flask, and Tailwind CSS**, it's designed for the ultimate football fan experience! ⚡
 
-## Getting Started
+---
 
-### 1. Clone the Repository
+## 🚀 Features
 
+✅ **Live Match Updates** – Real-time scores, goal scorers, and match events 📊  
+✅ **Rankings & Stats** – Track team performance and player statistics 🏅  
+✅ **Fantasy League** – Create and manage your dream team! 🎮  
+✅ **Admin Panel** – Manage teams, players, and fixtures 🔧  
+✅ **Secure Authentication** – Login/Signup powered by **Supabase** 🔐  
+
+🎥 **Quick Demo:**  
+![ASL Demo](https://media.giphy.com/media/xT1XGzXhV41b2l1GC4/giphy.gif)
+
+---
+
+## 🌍 Live Website
+
+The ASL website is hosted on:  
+🔗 **[asl.1011.cloud](https://asl.1011.cloud)**  
+🔗 **Explore more at [1011.cloud](https://1011.cloud)**
+
+---
+
+## 🛠️ Getting Started
+
+### 🔻 1. Clone the Repository
 ```bash
 git clone https://github.com/asl-1011/asl_aisat.git
 cd asl_aisat
 ```
 
-### 2. Install Dependencies
-
+### 🔻 2. Install Dependencies
 ```bash
 npm install # or yarn install
 ```
 
-### 3. Set Up Environment Variables
-
-Create a `.env.local` file in the root directory and configure the necessary environment variables:
-
+### 🔻 3. Set Up Environment Variables
+Create a `.env.local` file and configure it:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=''
 SUPABASE_SERVICE_ROLE_KEY=
@@ -40,35 +55,34 @@ AES_SECRET_KEY=2d2a1d4c9e8b7f6d5a0c3b1e4d2f9a8e7c6b5d4a1f0e9c8b7a6d5c4b3e2f1a0d
 AES_SECRET_IV=op1e2d3c4b5a69788c9e0f1a2b3c4d5e6
 ```
 
-Make sure your Supabase keys are handled securely and **never exposed** to the frontend.
-
-### 4. Run the Development Server
-
+### 🔻 4. Run the Development Server
 ```bash
 npm run dev  # or yarn dev
 ```
+🌍 Open **[http://localhost:3000](http://localhost:3000)** in your browser to view the project.
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to view the project.
+---
 
-## Deployment
+## 🚀 Deployment
 
-The ASL website is hosted on **[asl.1011.cloud](https://asl.1011.cloud)**. You can also explore more projects on **[1011.cloud](https://1011.cloud)**.
-
-The recommended platform for deploying this project is **Vercel**. You can deploy it by clicking the button below:
-
+Deploy easily using **Vercel**:  
 [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new)
 
-Alternatively, you can deploy on your preferred platform using Docker, Netlify, or DigitalOcean.
+Alternatively, deploy on **Docker, Netlify, or DigitalOcean**.
 
-## Learn More
+---
 
-- [Next.js Documentation](https://nextjs.org/docs)
-- [ASL Website Guide](#)
-- [Fantasy League Rules](#)
+## 📚 Learn More
 
-## Screenshots
+📖 [Next.js Documentation](https://nextjs.org/docs)  
+📖 [ASL Website Guide](#)  
+📖 [Fantasy League Rules](#)
+
+---
+
+## 📸 Screenshots
 
 ![Live Match](https://source.unsplash.com/featured/?soccer,stadium)
 
-Enjoy building the ASL experience!
+⚽ **Join the game and experience ASL today!** 🚀
 
