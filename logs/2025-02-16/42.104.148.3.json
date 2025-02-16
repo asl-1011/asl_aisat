@@ -1,0 +1,398 @@
+[
+  {
+    "timestamp": "2025-02-16 9-03-pm",
+    "deviceInfo": {
+      "platform": "Unknown",
+      "details": "Windows Device",
+      "isMobile": false,
+      "brands": "Unknown",
+      "browserVersion": "Unknown"
+    },
+    "networkInfo": {
+      "effectiveType": "Unknown",
+      "downlink": "Unknown",
+      "rtt": "Unknown",
+      "saveData": "No",
+      "type": "Unknown"
+    },
+    "batteryInfo": {},
+    "clientIp": {
+      "ip": "42.104.148.3"
+    },
+    "pluginsInfo": [
+      {
+        "name": "PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chrome PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chromium PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Microsoft Edge PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "WebKit built-in PDF",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      }
+    ],
+    "languageInfo": {
+      "language": "en-US",
+      "languages": "en-US, en",
+      "timezone": "America/Los_Angeles"
+    },
+    "geolocationInfo": {
+      "latitude": 9.9713024,
+      "longitude": 76.3035648,
+      "accuracy": 168246.93132296836
+    },
+    "storageInfo": {
+      "localStorage": 2,
+      "sessionStorage": 0,
+      "cookies": 0
+    },
+    "screenInfo": {
+      "screenWidth": 1525,
+      "screenHeight": 858,
+      "screenOrientation": "landscape-primary",
+      "colorDepth": 24,
+      "pixelRatio": 0.8955223880597015,
+      "availableWidth": 1525,
+      "availableHeight": 813
+    },
+    "hardwareInfo": {
+      "cpuCores": 4
+    },
+    "mediaInfo": [
+      {
+        "kind": "audioinput",
+        "label": "Unknown",
+        "deviceId": ""
+      },
+      {
+        "kind": "videoinput",
+        "label": "Unknown",
+        "deviceId": ""
+      }
+    ],
+    "appInfo": {
+      "appCacheStatus": "Not available"
+    }
+  },
+  {
+    "timestamp": "2025-02-16 9-04-pm",
+    "deviceInfo": {
+      "platform": "Windows",
+      "platformVersion": "10.0.0",
+      "architecture": "x86",
+      "model": "Unknown",
+      "browserVersion": "133.0.3065.59",
+      "isMobile": false,
+      "brands": "Not(A:Brand 99, Microsoft Edge 133, Chromium 133"
+    },
+    "networkInfo": {
+      "effectiveType": "4g",
+      "downlink": 8.7,
+      "rtt": 150,
+      "saveData": "No",
+      "type": "Unknown"
+    },
+    "batteryInfo": {
+      "charging": "No",
+      "level": "16.00%",
+      "chargingTime": "Full",
+      "dischargingTime": "2706 sec"
+    },
+    "clientIp": {
+      "ip": "42.104.148.3"
+    },
+    "pluginsInfo": [
+      {
+        "name": "PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chrome PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chromium PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Microsoft Edge PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "WebKit built-in PDF",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      }
+    ],
+    "languageInfo": {
+      "language": "en-US",
+      "languages": "en-US, en",
+      "timezone": "America/Los_Angeles"
+    },
+    "geolocationInfo": {
+      "latitude": 10.231884,
+      "longitude": 76.408874,
+      "accuracy": 500
+    },
+    "storageInfo": {
+      "localStorage": 0,
+      "sessionStorage": 0,
+      "cookies": 0
+    },
+    "screenInfo": {
+      "screenWidth": 1366,
+      "screenHeight": 768,
+      "screenOrientation": "landscape-primary",
+      "colorDepth": 24,
+      "pixelRatio": 1,
+      "availableWidth": 1366,
+      "availableHeight": 728
+    },
+    "hardwareInfo": {
+      "cpuCores": 4
+    },
+    "mediaInfo": [
+      {
+        "kind": "audioinput",
+        "label": "Unknown",
+        "deviceId": ""
+      },
+      {
+        "kind": "videoinput",
+        "label": "Unknown",
+        "deviceId": ""
+      },
+      {
+        "kind": "audiooutput",
+        "label": "Unknown",
+        "deviceId": ""
+      }
+    ],
+    "appInfo": {
+      "appCacheStatus": "Not available"
+    }
+  },
+  {
+    "timestamp": "2025-02-16 9-05-pm",
+    "deviceInfo": {
+      "platform": "Windows",
+      "platformVersion": "10.0.0",
+      "architecture": "x86",
+      "model": "Unknown",
+      "browserVersion": "133.0.3065.59",
+      "isMobile": false,
+      "brands": "Not(A:Brand 99, Microsoft Edge 133, Chromium 133"
+    },
+    "networkInfo": {
+      "effectiveType": "4g",
+      "downlink": 8.7,
+      "rtt": 150,
+      "saveData": "No",
+      "type": "Unknown"
+    },
+    "batteryInfo": {
+      "charging": "No",
+      "level": "16.00%",
+      "chargingTime": "Full",
+      "dischargingTime": "2706 sec"
+    },
+    "clientIp": {
+      "ip": "42.104.148.3"
+    },
+    "pluginsInfo": [
+      {
+        "name": "PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chrome PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chromium PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Microsoft Edge PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "WebKit built-in PDF",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      }
+    ],
+    "languageInfo": {
+      "language": "en-US",
+      "languages": "en-US, en",
+      "timezone": "America/Los_Angeles"
+    },
+    "geolocationInfo": {
+      "latitude": 9.9482,
+      "longitude": 76.3415,
+      "accuracy": 37367
+    },
+    "storageInfo": {
+      "localStorage": 1,
+      "sessionStorage": 0,
+      "cookies": 0
+    },
+    "screenInfo": {
+      "screenWidth": 1366,
+      "screenHeight": 768,
+      "screenOrientation": "landscape-primary",
+      "colorDepth": 24,
+      "pixelRatio": 1,
+      "availableWidth": 1366,
+      "availableHeight": 728
+    },
+    "hardwareInfo": {
+      "cpuCores": 4
+    },
+    "mediaInfo": [
+      {
+        "kind": "audioinput",
+        "label": "Unknown",
+        "deviceId": ""
+      },
+      {
+        "kind": "videoinput",
+        "label": "Unknown",
+        "deviceId": ""
+      },
+      {
+        "kind": "audiooutput",
+        "label": "Unknown",
+        "deviceId": ""
+      }
+    ],
+    "appInfo": {
+      "appCacheStatus": "Not available"
+    }
+  },
+  {
+    "timestamp": "2025-02-16 9-06-pm",
+    "deviceInfo": {
+      "platform": "Windows",
+      "platformVersion": "10.0.0",
+      "architecture": "x86",
+      "model": "Unknown",
+      "browserVersion": "133.0.3065.59",
+      "isMobile": false,
+      "brands": "Not(A:Brand 99, Microsoft Edge 133, Chromium 133"
+    },
+    "networkInfo": {
+      "effectiveType": "4g",
+      "downlink": 8.7,
+      "rtt": 150,
+      "saveData": "No",
+      "type": "Unknown"
+    },
+    "batteryInfo": {
+      "charging": "No",
+      "level": "16.00%",
+      "chargingTime": "Full",
+      "dischargingTime": "2706 sec"
+    },
+    "clientIp": {
+      "ip": "42.104.148.3"
+    },
+    "pluginsInfo": [
+      {
+        "name": "PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chrome PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chromium PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Microsoft Edge PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "WebKit built-in PDF",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      }
+    ],
+    "languageInfo": {
+      "language": "en-US",
+      "languages": "en-US, en",
+      "timezone": "America/Los_Angeles"
+    },
+    "geolocationInfo": {
+      "latitude": 9.9482,
+      "longitude": 76.3415,
+      "accuracy": 37367
+    },
+    "storageInfo": {
+      "localStorage": 1,
+      "sessionStorage": 0,
+      "cookies": 0
+    },
+    "screenInfo": {
+      "screenWidth": 1366,
+      "screenHeight": 768,
+      "screenOrientation": "landscape-primary",
+      "colorDepth": 24,
+      "pixelRatio": 1,
+      "availableWidth": 1366,
+      "availableHeight": 728
+    },
+    "hardwareInfo": {
+      "cpuCores": 4
+    },
+    "mediaInfo": [
+      {
+        "kind": "audioinput",
+        "label": "Unknown",
+        "deviceId": ""
+      },
+      {
+        "kind": "videoinput",
+        "label": "Unknown",
+        "deviceId": ""
+      },
+      {
+        "kind": "audiooutput",
+        "label": "Unknown",
+        "deviceId": ""
+      }
+    ],
+    "appInfo": {
+      "appCacheStatus": "Not available"
+    }
+  }
+]
