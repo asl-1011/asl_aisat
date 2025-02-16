@@ -13,10 +13,10 @@ const supabase = createClient(
 
 export async function POST() {
   try {
-    // ✅ Get cookies
-    const cookieStore = cookies();
-    let encryptedToken = cookieStore.get("auth_token")?.value;
-    let encryptedRefreshToken = cookieStore.get("refresh_token")?.value;
+    // ✅ Get cookies asynchronously
+    const cookieStore = await cookies();
+    const encryptedToken = (await cookieStore.get("auth_token"))?.value;
+    const encryptedRefreshToken = (await cookieStore.get("refresh_token"))?.value;
 
     if (!encryptedToken) {
       return NextResponse.json({ authenticated: false }, { status: 401 });
@@ -44,8 +44,8 @@ export async function POST() {
         const newAccessToken = data.session.access_token;
         const newRefreshToken = data.session.refresh_token;
 
-        cookieStore.set("auth_token", encrypt(newAccessToken), { httpOnly: true, secure: true });
-        cookieStore.set("refresh_token", encrypt(newRefreshToken), { httpOnly: true, secure: true });
+        await cookieStore.set("auth_token", encrypt(newAccessToken), { httpOnly: true, secure: true });
+        await cookieStore.set("refresh_token", encrypt(newRefreshToken), { httpOnly: true, secure: true });
 
         return NextResponse.json({ authenticated: true });
       } else {

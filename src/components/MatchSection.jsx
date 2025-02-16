@@ -3,8 +3,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Timer } from "lucide-react";
 import dynamic from "next/dynamic";
 
-const MatchCard = dynamic(() => import("./MatchCard"), { ssr: false, loading: () => <p>Loading...</p> });
+// Correctly importing MatchCard
+const MatchCard = dynamic(() => import("./MatchCard").then((mod) => mod.default), {
+  ssr: false,
+  loading: () => <p>Loading...</p>,
+});
 
+// Animation Variants
 const sectionVariants = {
   hidden: { opacity: 0, y: 10 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } },
@@ -19,12 +24,12 @@ const matchVariants = {
 const MatchSection = ({ matchData }) => {
   const [category, setCategory] = useState("all");
 
-  const filteredMatches = matchData.filter((match) => {
-    if (category === "all") return true;
-    if (category === "recent") return match.status === "finished";
-    if (category === "upcoming") return match.status === "upcoming";
-    return false;
-  });
+  // Categorize matches
+  const filteredMatches = matchData.filter((match) => 
+    category === "all" || 
+    (category === "recent" && match.status === "finished") || 
+    (category === "upcoming" && match.status === "upcoming")
+  );
 
   return (
     <motion.section
@@ -33,10 +38,12 @@ const MatchSection = ({ matchData }) => {
       animate="visible"
       className="bg-white rounded-xl border shadow-md p-4 hover:shadow-lg transition-shadow duration-200"
     >
+      {/* Header */}
       <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
         <Timer className="w-5 h-5 text-blue-500 mr-2" /> Matches
       </h2>
 
+      {/* Category Filters */}
       <div className="flex justify-center space-x-2 sm:space-x-4 mb-6">
         {["all", "recent", "upcoming"].map((cat) => (
           <button
@@ -50,9 +57,10 @@ const MatchSection = ({ matchData }) => {
         ))}
       </div>
 
+      {/* Match List */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={category}
+          key={category} // Ensures correct animation switching
           initial="hidden"
           animate="visible"
           exit="exit"
@@ -60,7 +68,7 @@ const MatchSection = ({ matchData }) => {
         >
           {filteredMatches.length > 0 ? (
             filteredMatches.map((match) => (
-              <motion.div key={match.id} variants={matchVariants}>
+              <motion.div key={match._id || match.id} variants={matchVariants}>
                 <MatchCard {...match} />
               </motion.div>
             ))

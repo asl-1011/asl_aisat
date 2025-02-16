@@ -1,50 +1,85 @@
 "use server";
 
 import { NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/mongodb";
+import Match from "@/models/Match";
+import Player from "@/models/Player"; // Ensure Player model is registered
 
 export async function GET() {
-  const matchData = [
-    {
-      id: 1,
-      team1: "Warriors FC",
-      team2: "Phoenix United",
-      team1Logo:
-        "https://images.unsplash.com/photo-1589487391730-58f20eb2c308?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80",
-      team2Logo:
-        "https://images.unsplash.com/photo-1589481169991-40ee02888551?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80",
-      score: "2 - 1",
-      status: "recent",
-      description: "Today 15:00",
-    },
-    {
-      id: 2,
-      team1: "Royal Eagles",
-      team2: "Storm City",
-      team1Logo:
-        "https://images.unsplash.com/photo-1589487391730-58f20eb2c308?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80",
-      team2Logo:
-        "https://images.unsplash.com/photo-1589481169991-40ee02888551?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80",
-      score: "0 - 0",
-      status: "upcoming",
-      description: "Today 18:00",
-    },
-    {
-      id: 3,
-      team1: "Titans SC",
-      team2: "Victory FC",
-      team1Logo:
-        "https://images.unsplash.com/photo-1589487391730-58f20eb2c308?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80",
-      team2Logo:
-        "https://images.unsplash.com/photo-1589481169991-40ee02888551?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80",
-      score: "",
-      status: "live",
-      description: "Live now",
-    },
-  ];
+  try {
+    await connectToDatabase();
 
-  return NextResponse.json(matchData);
+    const matches = await Match.find({})
+      .populate({
+        path: "playersTeam1",
+        model: Player, // Explicitly specify the Player model
+        select: "name position profilePic stats",
+      })
+      .populate({
+        path: "playersTeam2",
+        model: Player, // Explicitly specify the Player model
+        select: "name position profilePic stats",
+      });
+
+    return NextResponse.json(matches, { status: 200 });
+  } catch (error) {
+    console.error("❌ Error fetching matches:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch matches", details: error.message },
+      { status: 500 }
+    );
+  }
 }
 
-export async function POST() {
-  return NextResponse.json({ message: "Method Not Allowed" }, { status: 405 });
+export async function POST(req) {
+  try {
+    await connectToDatabase();
+
+    const body = await req.json();
+    const {
+      team1,
+      team2,
+      team1Logo,
+      team2Logo,
+      score,
+      status,
+      description,
+      playersTeam1 = [],
+      playersTeam2 = [],
+    } = body;
+
+    // Validate required fields
+    if (!team1 || !team2 || !status || !description) {
+      return NextResponse.json(
+        { error: "Missing required fields: team1, team2, status, or description" },
+        { status: 400 }
+      );
+    }
+
+    // Ensure player ObjectIds exist in the database before adding them
+    const existingPlayersTeam1 = await Player.find({ _id: { $in: playersTeam1 } });
+    const existingPlayersTeam2 = await Player.find({ _id: { $in: playersTeam2 } });
+
+    const newMatch = new Match({
+      team1,
+      team2,
+      team1Logo,
+      team2Logo,
+      score,
+      status,
+      description,
+      playersTeam1: existingPlayersTeam1.map((p) => p._id),
+      playersTeam2: existingPlayersTeam2.map((p) => p._id),
+    });
+
+    await newMatch.save();
+
+    return NextResponse.json({ message: "✅ Match Added Successfully" }, { status: 201 });
+  } catch (error) {
+    console.error("❌ Error adding match:", error);
+    return NextResponse.json(
+      { error: "Failed to add match", details: error.message },
+      { status: 500 }
+    );
+  }
 }
