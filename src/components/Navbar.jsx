@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation"; // Use the Next.js router
+import { usePathname } from "next/navigation"; // Use for App Router
 import { Home, Shield, Users, User as UserIcon } from "lucide-react";
 import { IconShirtSport } from "@tabler/icons-react";
 
@@ -14,9 +14,9 @@ const navItems = [
 // Navbar component
 export default function Navbar() {
   const [hovered, setHovered] = useState(null); // Track hovered item
-  const router = useRouter(); // Access Next.js router
+  const pathname = usePathname(); // Use the pathname from the App Router
 
-  const activeTab = navItems.find(item => item.path === router.pathname)?.name || "Home";
+  const activeTab = navItems.find(item => item.path === pathname)?.name || "Home";
 
   return (
     <div className="fixed bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-white/70 to-white/40 backdrop-blur-xl px-6 py-3 rounded-full shadow-2xl border border-white/30 flex gap-3 items-center justify-center transition-all duration-300 hover:shadow-xl">
@@ -27,7 +27,6 @@ export default function Navbar() {
           isActive={activeTab === item.name}
           isHovered={hovered === item.name}
           setHovered={setHovered}
-          onClick={() => router.push(item.path)} // Navigate to the corresponding page
         />
       ))}
     </div>
@@ -35,7 +34,7 @@ export default function Navbar() {
 }
 
 // NavItem component - handles each button
-function NavItem({ item, isActive, isHovered, setHovered, onClick }) {
+function NavItem({ item, isActive, isHovered, setHovered }) {
   const Icon = item.icon;
 
   return (
@@ -45,7 +44,7 @@ function NavItem({ item, isActive, isHovered, setHovered, onClick }) {
       onMouseLeave={() => setHovered(null)}
     >
       <button
-        onClick={onClick}
+        onClick={() => window.location.href = item.path} // Use window.location.href to navigate
         className={`relative flex items-center gap-3  px-4 py-2 rounded-full transition-all duration-300 focus:outline-none ${
           isActive
             ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105"

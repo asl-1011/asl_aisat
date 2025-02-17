@@ -30,28 +30,27 @@ const NewsSection = ({ setSelectedNews = () => {} }) => {
     const fetchNews = async () => {
       try {
         const response = await fetch("/api/news");
-
+  
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          throw new Error("Failed to fetch news. Please try again later.");
         }
-
+  
         const data = await response.json();
         if (Array.isArray(data)) {
           setNewsItems(data);
         } else {
-          throw new Error("Invalid news data format received");
+          throw new Error("Unexpected data format.");
         }
       } catch (err) {
-        console.error("Error fetching news:", err);
-        setError(err.message);
+        console.error("News Fetch Error:", err); // Log actual error for debugging
+        setError("Something went wrong. Please try again later."); // User-friendly message
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchNews();
   }, []);
-
   // Handle news selection
   const handleNewsClick = useCallback(
     (newsId) => {
