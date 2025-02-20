@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { adminAuth, adminDb } from "@/lib/firebaseAdmin";
 
-// ✅ Custom Error Classes for Better Handling
+// ✅ Custom Error  Handling
 class UnauthorizedError extends Error {
   constructor(message = "Unauthorized") {
     super(message);
