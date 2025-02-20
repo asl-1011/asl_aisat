@@ -97,7 +97,7 @@ export default function ManagerProfile() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
           <StatsCard icon={DollarSign} iconColor="text-green-500" label="Budget Spent" value={profileData.budgetSpent} />
           <StatsCard icon={BarChart} iconColor="text-purple-500" label="Win %" value={profileData.winPercentage} />
-          <StatsCard icon={Trophy} iconColor="text-yellow-500" label="Matches Won" value={profileData.match_win} />
+          <StatsCard icon={Trophy} iconColor="text-yellow-500" label="Matches Won" value={profileData.matchWin} />
           <StatsCard icon={Users} iconColor="text-red-500" label="Manager Rank" value={`#${profileData.managerRank}`} />
         </div>
 

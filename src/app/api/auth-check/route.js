@@ -1,35 +1,28 @@
-import { cookies } from "next/headers";
+"use server";
+
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { cookies } from "next/headers";
+import { adminAuth } from "@/lib/firebaseAdmin"; // Firebase Admin SDK
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
-export async function POST(req) {
+export async function POST() {
   try {
-    // ✅ Await cookies()
-    const cookieStore = await cookies();
-    let encryptedToken = cookieStore.get("auth_token")?.value;
-    let encryptedRefreshToken = cookieStore.get("refresh_token")?.value;
+    // ✅ Get session cookie from request
+    const sessionCookie = cookies().get("session")?.value;
 
-    if (!encryptedToken) {
+    if (!sessionCookie) {
       return NextResponse.json({ authenticated: false }, { status: 401 });
     }
 
-    // ✅ Validate Token with Supabase
-    const { data: user, error } = await supabase.auth.getUser(encryptedToken);
-
-    if (error) {
-      console.error("Supabase Auth Error:", error.message);
-      return NextResponse.json({ authenticated: false, error: error.message }, { status: 500 });
+    // ✅ Verify session cookie with Firebase Admin SDK
+    try {
+      const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie, true);
+      return NextResponse.json({ authenticated: true, user: decodedClaims });
+    } catch (error) {
+      console.error("Session verification failed:", error);
+      return NextResponse.json({ authenticated: false }, { status: 401 });
     }
-
-    return NextResponse.json({ authenticated: !!user }, { status: 200 });
-
-  } catch (err) {
-    console.error("Auth Check Error:", err.message);
-    return NextResponse.json({ authenticated: false, error: err.message }, { status: 500 });
+  } catch (error) {
+    console.error("Auth check error:", error);
+    return NextResponse.json({ authenticated: false }, { status: 500 });
   }
 }

@@ -1,76 +1,48 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { encrypt } from "@/utils/aes";  // Import encryption utility
+import { cookies } from "next/headers";
+import { getAuth, signInWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { adminAuth } from "@/lib/firebaseAdmin"; // Firebase Admin SDK
+import { app } from "@/lib/firebase"; // Firebase Client SDK
 
-// Validate environment variables
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const auth = getAuth(app);
 
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-  throw new Error("Missing Supabase environment variables");
-}
-
-// Initialize Supabase client securely
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-  auth: { persistSession: false },
-});
-
-/**
- * Handles user login request.
- * @param {Request} req - The incoming request object
- * @returns {NextResponse} - JSON response
- */
 export async function POST(req) {
   try {
     const { email, password } = await req.json();
+
     if (!email || !password) {
-      return NextResponse.json(
-        { success: false, message: "Email and password are required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, message: "Email and password are required" }, { status: 400 });
     }
 
-    // Attempt login
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error || !data?.session) {
-      return NextResponse.json(
-        { success: false, message: "Invalid credentials" },
-        { status: 401 }
-      );
+    // ✅ Sign in the user
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // ✅ Check if the email is verified
+    if (!user.emailVerified) {
+      await sendEmailVerification(user);
+      return NextResponse.json({ success: false, message: "Email not verified. Verification email sent." }, { status: 401 });
     }
 
-    const { access_token, refresh_token } = data.session;
+    // ✅ Create session cookie (valid for 2 weeks)
+    const idToken = await user.getIdToken();
+    const expiresIn = 14 * 24 * 60 * 60 * 1000; // 2 weeks
+    const sessionCookie = await adminAuth.createSessionCookie(idToken, { expiresIn });
 
-    // Encrypt tokens
-    const encryptedAccessToken = encrypt(access_token);
-    const encryptedRefreshToken = encrypt(refresh_token);
-
-    // Securely store encrypted tokens in HttpOnly cookies
-    cookies().set("auth_token", encryptedAccessToken, {
+    // ✅ Store session token in HTTP-only cookies
+    cookies().set("session", sessionCookie, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "Strict",
+      maxAge: expiresIn / 1000, // Convert ms to seconds
       path: "/",
-      maxAge: 60 * 60 * 24 * 7,
     });
 
-    cookies().set("refresh_token", encryptedRefreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7,
-    });
-
-    return NextResponse.json({ success: true, message: "Login successful" });
+    return NextResponse.json({ success: true, message: "Login successful!", user: { uid: user.uid, email: user.email } });
   } catch (error) {
     console.error("Login error:", error);
-    return NextResponse.json(
-      { success: false, message: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
 }

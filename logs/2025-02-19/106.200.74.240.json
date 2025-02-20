@@ -1,0 +1,92 @@
+[
+  {
+    "timestamp": "2025-02-19 5-35-am",
+    "deviceInfo": {
+      "platform": "Unknown",
+      "details": "Windows Device",
+      "isMobile": false,
+      "brands": "Unknown",
+      "browserVersion": "Unknown"
+    },
+    "networkInfo": {
+      "effectiveType": "Unknown",
+      "downlink": "Unknown",
+      "rtt": "Unknown",
+      "saveData": "No",
+      "type": "Unknown"
+    },
+    "batteryInfo": {},
+    "clientIp": {
+      "ip": "106.200.74.240"
+    },
+    "pluginsInfo": [
+      {
+        "name": "PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chrome PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chromium PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Microsoft Edge PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "WebKit built-in PDF",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      }
+    ],
+    "languageInfo": {
+      "language": "en-US",
+      "languages": "en-US, en",
+      "timezone": "America/Los_Angeles"
+    },
+    "geolocationInfo": {
+      "latitude": 9.9312328,
+      "longitude": 76.2673041,
+      "accuracy": 134680.72920039212
+    },
+    "storageInfo": {
+      "localStorage": 2,
+      "sessionStorage": 0,
+      "cookies": 0
+    },
+    "screenInfo": {
+      "screenWidth": 1525,
+      "screenHeight": 858,
+      "screenOrientation": "landscape-primary",
+      "colorDepth": 24,
+      "pixelRatio": 0.8955223880597015,
+      "availableWidth": 1525,
+      "availableHeight": 813
+    },
+    "hardwareInfo": {
+      "cpuCores": 4
+    },
+    "mediaInfo": [
+      {
+        "kind": "audioinput",
+        "label": "Unknown",
+        "deviceId": ""
+      },
+      {
+        "kind": "videoinput",
+        "label": "Unknown",
+        "deviceId": ""
+      }
+    ],
+    "appInfo": {
+      "appCacheStatus": "Not available"
+    }
+  }
+]

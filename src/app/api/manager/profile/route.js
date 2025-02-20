@@ -1,103 +1,118 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { decrypt } from "@/utils/aes"; // Import decryption utility
+import { cookies } from "next/headers";
+import { adminAuth, adminDb } from "@/lib/firebaseAdmin";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-  throw new Error("Missing Supabase environment variables");
+// ✅ Custom Error Classes for Better Handling
+class UnauthorizedError extends Error {
+  constructor(message = "Unauthorized") {
+    super(message);
+    this.name = "UnauthorizedError";
+    this.status = 401;
+  }
 }
 
-// Initialize Supabase  
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-  auth: { persistSession: false },
-});
+class NotFoundError extends Error {
+  constructor(message = "Not Found") {
+    super(message);
+    this.name = "NotFoundError";
+    this.status = 404;
+  }
+}
 
-const handleErrorResponse = (message, status = 500) => {
-  return NextResponse.json({ success: false, message }, { status });
+class InternalServerError extends Error {
+  constructor(message = "Internal Server Error") {
+    super(message);
+    this.name = "InternalServerError";
+    this.status = 500;
+  }
+}
+
+// ✅ Utility: Handle Error Responses
+const handleErrorResponse = (error) => {
+  const status = error.status || 500;
+  return NextResponse.json({ success: false, message: error.message }, { status });
 };
 
-const fetchUserFromToken = async (encryptedToken) => {
-  const accessToken = decrypt(encryptedToken);
-  if (!accessToken) {
-    throw new Error("Invalid token");
+// ✅ Verify Session and Extract User Email
+const getUserEmailFromSession = async () => {
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get("session")?.value;
+
+  if (!sessionCookie) throw new UnauthorizedError("No session found");
+
+  try {
+    const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie, true);
+    return decodedClaims.email;
+  } catch {
+    throw new UnauthorizedError("Invalid or expired session");
   }
-  const { data: { user }, error } = await supabase.auth.getUser(accessToken);
-  if (error || !user) {
-    throw new Error("User not found");
-  }
-  return user;
 };
 
+// ✅ Fetch Manager Data (Including Players)
 const fetchManagerAndPlayers = async (email) => {
-  const { data: manager, error: managerError } = await supabase
-    .from("managers")
-    .select("*")
-    .eq("email", email)
-    .single();
+  const managerSnap = await adminDb
+    .collection("managers")
+    .where("email", "==", email)
+    .limit(1)
+    .get();
 
-  if (managerError || !manager) {
-    throw new Error("Manager not found");
+  if (managerSnap.empty) throw new NotFoundError("Manager not found");
+
+  const managerDoc = managerSnap.docs[0];
+  const manager = { id: managerDoc.id, ...managerDoc.data() };
+
+  console.log("📌 Manager Data:", JSON.stringify(manager, null, 2)); // 🔹 Log Manager Data
+
+  if (!Array.isArray(manager.players) || manager.players.length === 0) {
+    return { manager, players: [] };
   }
 
-  const { data: players, error: playersError } = await supabase
-    .from("players")
-    .select("*")
-    .eq("manager_id", manager.id);
+  // ✅ Optimize Query: Batch Fetch Players using IDs
+  const playersQuery = adminDb.collection("players").where("__name__", "in", manager.players);
+  const playersSnap = await playersQuery.get();
 
-  if (playersError) {
-    throw new Error("Failed to fetch players");
-  }
+  const players = playersSnap.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  console.log("📌 Players Data:", JSON.stringify(players, null, 2)); // 🔹 Log Players Data
 
   return { manager, players };
 };
-
-const mapManagerProfile = (manager, players) => ({
+// ✅ Format Manager Profile for Response
+const formatManagerProfile = (manager, players) => ({
   name: manager.name,
   email: manager.email,
   team: manager.team,
   budgetSpent: manager.budget_spent,
   budgetBalance: manager.budget_balance,
   winPercentage: manager.win_percentage,
-  match_win: manager.match_win,
+  matchWin: manager.match_win,
   coverPic: manager.cover_pic,
   profilePic: manager.profile_pic,
   managerRank: manager.manager_rank,
-  players: Array.isArray(players)
-    ? players.map(player => ({
-        name: player.name,
-        position: player.position,
-        profilePic: player.profile_pic,
-        price: player.price,
-        points: player.points,
-        goals: player.goals,
-      }))
-    : [],
+  players: players.map(({ id, name, position, profile_pic, price, points, goals }) => ({
+    id,
+    name,
+    position,
+    profilePic: profile_pic,
+    price,
+    points,
+    goals,
+  })),
 });
 
-export async function GET(req) {
+// ✅ GET API Route
+export async function GET() {
   try {
-    const cookieStore = await cookies();
-    const encryptedToken = cookieStore.get("auth_token")?.value;
-
-    if (!encryptedToken) {
-      return handleErrorResponse("Unauthorized", 401);
-    }
-
-    const user = await fetchUserFromToken(encryptedToken);
-
-    const { manager, players } = await fetchManagerAndPlayers(user.email);
-
-    const managerProfile = mapManagerProfile(manager, players);
-
-    return NextResponse.json(managerProfile);
+    const email = await getUserEmailFromSession();
+    const { manager, players } = await fetchManagerAndPlayers(email);
+    return NextResponse.json(formatManagerProfile(manager, players));
   } catch (error) {
     console.error("Profile Fetch Error:", error.message || error);
-    const message = error.message || "Internal server error";
-    return handleErrorResponse(message, 500);
+    return handleErrorResponse(error);
   }
 }

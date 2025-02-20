@@ -1,0 +1,254 @@
+[
+  {
+    "timestamp": "2025-02-20 6-37-am",
+    "deviceInfo": {
+      "platform": "Unknown",
+      "details": "Windows Device",
+      "isMobile": false,
+      "brands": "Unknown",
+      "browserVersion": "Unknown"
+    },
+    "networkInfo": {
+      "effectiveType": "Unknown",
+      "downlink": "Unknown",
+      "rtt": "Unknown",
+      "saveData": "No",
+      "type": "Unknown"
+    },
+    "batteryInfo": {},
+    "clientIp": {},
+    "pluginsInfo": [
+      {
+        "name": "PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chrome PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chromium PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Microsoft Edge PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "WebKit built-in PDF",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      }
+    ],
+    "languageInfo": {
+      "language": "en-US",
+      "languages": "en-US, en",
+      "timezone": "America/Los_Angeles"
+    },
+    "geolocationInfo": {},
+    "storageInfo": {
+      "localStorage": 2,
+      "sessionStorage": 0,
+      "cookies": 0
+    },
+    "screenInfo": {
+      "screenWidth": 1525,
+      "screenHeight": 858,
+      "screenOrientation": "landscape-primary",
+      "colorDepth": 24,
+      "pixelRatio": 0.8955223880597015,
+      "availableWidth": 1525,
+      "availableHeight": 813
+    },
+    "hardwareInfo": {
+      "cpuCores": 4
+    },
+    "mediaInfo": [
+      {
+        "kind": "audioinput",
+        "label": "Unknown",
+        "deviceId": ""
+      },
+      {
+        "kind": "videoinput",
+        "label": "Unknown",
+        "deviceId": ""
+      }
+    ],
+    "appInfo": {
+      "appCacheStatus": "Not available"
+    }
+  },
+  {
+    "timestamp": "2025-02-20 6-42-am",
+    "deviceInfo": {
+      "platform": "Unknown",
+      "details": "Windows Device",
+      "isMobile": false,
+      "brands": "Unknown",
+      "browserVersion": "Unknown"
+    },
+    "networkInfo": {
+      "effectiveType": "Unknown",
+      "downlink": "Unknown",
+      "rtt": "Unknown",
+      "saveData": "No",
+      "type": "Unknown"
+    },
+    "batteryInfo": {},
+    "clientIp": {},
+    "pluginsInfo": [
+      {
+        "name": "PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chrome PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chromium PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Microsoft Edge PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "WebKit built-in PDF",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      }
+    ],
+    "languageInfo": {
+      "language": "en-US",
+      "languages": "en-US, en",
+      "timezone": "America/Los_Angeles"
+    },
+    "geolocationInfo": {},
+    "storageInfo": {
+      "localStorage": 2,
+      "sessionStorage": 0,
+      "cookies": 0
+    },
+    "screenInfo": {
+      "screenWidth": 1525,
+      "screenHeight": 858,
+      "screenOrientation": "landscape-primary",
+      "colorDepth": 24,
+      "pixelRatio": 0.8955223880597015,
+      "availableWidth": 1525,
+      "availableHeight": 813
+    },
+    "hardwareInfo": {
+      "cpuCores": 4
+    },
+    "mediaInfo": [
+      {
+        "kind": "audioinput",
+        "label": "Unknown",
+        "deviceId": ""
+      },
+      {
+        "kind": "videoinput",
+        "label": "Unknown",
+        "deviceId": ""
+      }
+    ],
+    "appInfo": {
+      "appCacheStatus": "Not available"
+    }
+  },
+  {
+    "timestamp": "2025-02-20 6-42-am",
+    "deviceInfo": {
+      "platform": "Unknown",
+      "details": "Windows Device",
+      "isMobile": false,
+      "brands": "Unknown",
+      "browserVersion": "Unknown"
+    },
+    "networkInfo": {
+      "effectiveType": "Unknown",
+      "downlink": "Unknown",
+      "rtt": "Unknown",
+      "saveData": "No",
+      "type": "Unknown"
+    },
+    "batteryInfo": {},
+    "clientIp": {},
+    "pluginsInfo": [
+      {
+        "name": "PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chrome PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Chromium PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "Microsoft Edge PDF Viewer",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      },
+      {
+        "name": "WebKit built-in PDF",
+        "description": "Portable Document Format",
+        "filename": "internal-pdf-viewer"
+      }
+    ],
+    "languageInfo": {
+      "language": "en-US",
+      "languages": "en-US, en",
+      "timezone": "America/Los_Angeles"
+    },
+    "geolocationInfo": {},
+    "storageInfo": {
+      "localStorage": 2,
+      "sessionStorage": 0,
+      "cookies": 0
+    },
+    "screenInfo": {
+      "screenWidth": 1525,
+      "screenHeight": 858,
+      "screenOrientation": "landscape-primary",
+      "colorDepth": 24,
+      "pixelRatio": 0.8955223880597015,
+      "availableWidth": 1525,
+      "availableHeight": 813
+    },
+    "hardwareInfo": {
+      "cpuCores": 4
+    },
+    "mediaInfo": [
+      {
+        "kind": "audioinput",
+        "label": "Unknown",
+        "deviceId": ""
+      },
+      {
+        "kind": "videoinput",
+        "label": "Unknown",
+        "deviceId": ""
+      }
+    ],
+    "appInfo": {
+      "appCacheStatus": "Not available"
+    }
+  }
+]
