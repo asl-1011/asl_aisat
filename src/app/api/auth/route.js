@@ -13,7 +13,7 @@ export async function POST(req) {
     const { email, password } = await req.json();
 
     if (!email || !password) {
-      return NextResponse.json({ success: false, message: "Email and password are required" }, { status: 400 });
+      return NextResponse.json({ success: false }, { status: 400 });
     }
 
     // ✅ Sign in the user
@@ -23,7 +23,7 @@ export async function POST(req) {
     // ✅ Check if the email is verified
     if (!user.emailVerified) {
       await sendEmailVerification(user);
-      return NextResponse.json({ success: false, message: "Email not verified. Verification email sent." }, { status: 401 });
+      return NextResponse.json({ success: false }, { status: 401 });
     }
 
     // ✅ Create session cookie (valid for 2 weeks)
@@ -40,9 +40,9 @@ export async function POST(req) {
       path: "/",
     });
 
-    return NextResponse.json({ success: true, message: "Login successful!", user: { uid: user.uid, email: user.email } });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Login error:", error);
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    return NextResponse.json({ success: false }, { status: 500 });
   }
 }

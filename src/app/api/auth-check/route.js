@@ -7,7 +7,7 @@ import { adminAuth } from "@/lib/firebaseAdmin"; // Firebase Admin SDK
 export async function POST() {
   try {
     // ✅ Get session cookie from request
-    const sessionCookie = cookies().get("session")?.value;
+    const sessionCookie = await cookies().get("session")?.value;
 
     if (!sessionCookie) {
       return NextResponse.json({ authenticated: false }, { status: 401 });
@@ -15,8 +15,8 @@ export async function POST() {
 
     // ✅ Verify session cookie with Firebase Admin SDK
     try {
-      const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie, true);
-      return NextResponse.json({ authenticated: true, user: decodedClaims });
+      await adminAuth.verifySessionCookie(sessionCookie, true);
+      return NextResponse.json({ authenticated: true });
     } catch (error) {
       console.error("Session verification failed:", error);
       return NextResponse.json({ authenticated: false }, { status: 401 });

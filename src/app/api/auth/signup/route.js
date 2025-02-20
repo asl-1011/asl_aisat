@@ -16,16 +16,14 @@ export async function POST(req) {
 
     // ✅ Email/Password Sign-Up
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    await sendEmailVerification(user);
+    await sendEmailVerification(userCredential.user);
 
     return NextResponse.json({
       success: true,
-      message: "Signup successful. Please verify your email.",
-      user: { uid: user.uid, email: user.email },
+      message: "Signup successful. Please verify your email."
     });
   } catch (error) {
     console.error("Sign-Up error:", error);
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, message: "An error occurred. Please try again later." }, { status: 500 });
   }
 }
