@@ -6,10 +6,10 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import NewsCard from "@/components/NewsCard";
 
-// Slider settings
+// Slider settings (Fixed: Prevent duplicate news issue)
 const sliderSettings = {
   dots: false,
-  infinite: true,
+  infinite: false, // Prevents react-slick from duplicating slides
   speed: 500,
   slidesToShow: 1,
   slidesToScroll: 1,
@@ -29,28 +29,33 @@ const NewsSection = ({ setSelectedNews = () => {} }) => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await fetch("/api/news");
-  
+        const response = await fetch("/api/admin/news");
+
         if (!response.ok) {
           throw new Error("Failed to fetch news. Please try again later.");
         }
-  
+
         const data = await response.json();
+        console.log("Fetched News Data:", data); // Debugging output
+
         if (Array.isArray(data)) {
-          setNewsItems(data);
+          // Remove duplicates based on ID (Ensuring unique news)
+          const uniqueNews = Array.from(new Map(data.map((item) => [item.id || item._id, item])).values());
+          setNewsItems(uniqueNews);
         } else {
           throw new Error("Unexpected data format.");
         }
       } catch (err) {
         console.error("News Fetch Error:", err); // Log actual error for debugging
-        setError("Something went wrong. Please try again later."); // User-friendly message
+        setError("Something went wrong. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchNews();
   }, []);
+
   // Handle news selection
   const handleNewsClick = useCallback(
     (newsId) => {
@@ -79,11 +84,7 @@ const NewsSection = ({ setSelectedNews = () => {} }) => {
       {loading && <p className="text-center text-gray-500">Loading news...</p>}
 
       {/* Show error message if fetching fails */}
-      {error && (
-        <p className="text-center text-red-500">
-          Failed to load news: {error}
-        </p>
-      )}
+      {error && <p className="text-center text-red-500">Failed to load news: {error}</p>}
 
       {/* Display news items */}
       {!loading && !error && newsItems.length === 0 && (
@@ -91,11 +92,11 @@ const NewsSection = ({ setSelectedNews = () => {} }) => {
       )}
 
       {!loading && !error && newsItems.length > 0 && (
-        <Slider {...sliderSettings}>
-          {newsItems.map((news) => (
-            <div key={news.id}>
+        <Slider {...sliderSettings} className="h-64"> {/* Fixed height to prevent vertical stacking */}
+          {newsItems.map((news, index) => (
+            <div key={news.id || news._id || index}>
               <NewsCard
-                imageUrl={news.imageUrl}
+                imageUrl={news.imageUrl || "/fallback-image.jpg"} // Default fallback image
                 title={news.title}
                 description={news.description}
                 onClick={() => handleNewsClick(news.id)}

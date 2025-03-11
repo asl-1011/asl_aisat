@@ -10,7 +10,7 @@ if (!MONGODB_URI) {
 }
 
 // Global cache to prevent multiple connections
-let cached = global.mongoose || { conn: null, promise: null };
+let cached = global.mongoose || { conn: null, promise: null, gfs: null };
 
 export const connectDB = async () => {
   if (cached.conn) {
@@ -21,9 +21,18 @@ export const connectDB = async () => {
   if (!cached.promise) {
     console.info("⏳ Connecting to MongoDB...");
 
-    cached.promise = mongoose.connect(MONGODB_URI, {})
+    cached.promise = mongoose
+      .connect(MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      })
       .then((mongoose) => {
         console.info(`✅ MongoDB Connected: ${mongoose.connection.host}`);
+
+        // Setup GridFSBucket
+        const db = mongoose.connection.db;
+        cached.gfs = new mongoose.mongo.GridFSBucket(db, { bucketName: "uploads" });
+
         return mongoose;
       })
       .catch((error) => {
@@ -40,6 +49,14 @@ export const connectDB = async () => {
   }
 
   return cached.conn;
+};
+
+// Export GridFSBucket
+export const getGFS = () => {
+  if (!cached.gfs) {
+    throw new Error("❌ GridFSBucket is not initialized!");
+  }
+  return cached.gfs;
 };
 
 // Store globally to prevent multiple reconnections

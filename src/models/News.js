@@ -2,13 +2,10 @@ import mongoose from "mongoose";
 
 const newsSchema = new mongoose.Schema(
   {
-    imageUrl: { 
-      type: String, 
-      required: true, 
-      validate: {
-        validator: (v) => /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))$/i.test(v),
-        message: "Invalid image URL format",
-      },
+    imageId: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: "uploads.files", // Reference to GridFS files collection
+      required: true 
     },
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true, trim: true },
