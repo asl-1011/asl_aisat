@@ -18,7 +18,7 @@ const MatchCard = ({
     <div
       className="p-4 border border-gray-200 rounded-2xl bg-gradient-to-r from-white to-purple-50 
                  shadow-md shadow-purple-200 hover:shadow-lg hover:shadow-purple-300 
-                 transition-all duration-300 hover:scale-105 cursor-pointer sm:hover:scale-100"
+                 transition-all duration-300 hover:scale-[1.02] sm:hover:scale-100 cursor-pointer"
     >
       {/* Team Logos & Names */}
       <div className="flex items-center justify-between">
@@ -37,15 +37,16 @@ const MatchCard = ({
 
         {/* Score & Status */}
         <div className="flex flex-col items-center">
-          <span className="text-lg font-bold text-gray-800">
-            {team1Score !== undefined && team2Score !== undefined
-              ? `${Number(team1Score)} - ${Number(team2Score)}`
-              : "? - ?"}
-          </span>
+          {/* Hide score for Upcoming matches */}
+          {status !== "Upcoming" && (
+            <span className="text-lg font-bold text-gray-800">
+              {typeof team1Score === "number" && typeof team2Score === "number"
+                ? `${team1Score} - ${team2Score}`
+                : "? - ?"}
+            </span>
+          )}
 
-          <span
-            className={`text-sm ${statusColors[status] || "text-gray-600"}`}
-          >
+          <span className={`text-sm ${statusColors[status] || "text-gray-600"}`}>
             {status}
           </span>
         </div>

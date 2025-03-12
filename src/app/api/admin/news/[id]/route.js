@@ -28,17 +28,34 @@ export async function GET(req, { params }) {
     const gfs = getGFS();
     if (!gfs) throw new Error("❌ GridFS initialization failed");
 
+    if (!params?.id) {
+      return NextResponse.json({ error: "Missing file ID" }, { status: 400 });
+    }
+
     const { id } = params;
-    if (!ObjectId.isValid(id)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    }
 
     const fileCursor = gfs.find({ _id: new ObjectId(id) });
     const files = await fileCursor.toArray();
-    if (!files.length) return NextResponse.json({ error: "File not found" }, { status: 404 });
+    if (!files.length) {
+      return NextResponse.json({ error: "File not found" }, { status: 404 });
+    }
 
     const file = files[0];
     const downloadStream = gfs.openDownloadStream(file._id);
 
-    return new NextResponse(downloadStream, {
+    // Convert stream into a readable response
+    const readableStream = new ReadableStream({
+      start(controller) {
+        downloadStream.on("data", (chunk) => controller.enqueue(chunk));
+        downloadStream.on("end", () => controller.close());
+        downloadStream.on("error", (err) => controller.error(err));
+      },
+    });
+
+    return new NextResponse(readableStream, {
       headers: {
         "Content-Type": file.contentType,
         "Cache-Control": "public, max-age=31536000",

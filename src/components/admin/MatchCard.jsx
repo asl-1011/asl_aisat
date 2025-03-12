@@ -5,8 +5,8 @@ const MatchCard = ({
   team2 = "Unknown Team",
   team1Logo = "/default-logo.png",
   team2Logo = "/default-logo.png",
-  team1Score,
-  team2Score,
+  team1Score = null,
+  team2Score = null,
   status = "Upcoming",
   description = "Match details not available.",
   onDelete,
@@ -54,11 +54,13 @@ const MatchCard = ({
 
         {/* Score & Status */}
         <div className="flex flex-col items-center">
-          <span className="text-lg font-bold text-gray-800">
-            {team1Score !== undefined && team2Score !== undefined
-              ? `${Number(team1Score)} - ${Number(team2Score)}`
-              : "? - ?"}
-          </span>
+          {status !== "Upcoming" && (
+            <span className="text-lg font-bold text-gray-800">
+              {typeof team1Score === "number" && typeof team2Score === "number"
+                ? `${team1Score} - ${team2Score}`
+                : "? - ?"}
+            </span>
+          )}
           <span className={`text-sm ${statusColors[status] || "text-gray-600"}`}>
             {status}
           </span>
