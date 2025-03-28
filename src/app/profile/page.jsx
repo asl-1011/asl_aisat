@@ -4,9 +4,19 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import Navbar from "@components/Navbar.jsx";
-import { DollarSign, Trophy, Users, BarChart, LogOut, ChevronDown, Edit } from "lucide-react";
+import {
+  DollarSign,
+  Plus,
+  Trophy,
+  Users,
+  BarChart,
+  LogOut,
+  ChevronDown,
+  Edit,
+} from "lucide-react";
 import { ProfileHeader } from "@components/profile/ProfileHeader.jsx";
 import { StatsCard } from "@components/profile/StatsCard.jsx";
+import PlayersSection from "@components/profile/MyPlayerSection.jsx";
 import { motion } from "framer-motion";
 
 const fetcher = (url) =>
@@ -21,8 +31,13 @@ export default function ManagerProfile() {
   const [expandedPlayer, setExpandedPlayer] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
+  const { data: playersData } = useSWR("/api/manager/players_list", fetcher);
 
-  const { data: managerData, error, mutate } = useSWR("/api/manager/profile", fetcher, {
+  const {
+    data: managerData,
+    error,
+    mutate,
+  } = useSWR("/api/manager/profile", fetcher, {
     revalidateOnFocus: false,
     shouldRetryOnError: false,
   });
@@ -47,6 +62,55 @@ export default function ManagerProfile() {
     coverPic: "/default-cover.jpg",
     players: [],
   };
+  const availablePlayers =
+    playersData?.map((player) => ({
+      id: player._id.toString(),
+      name: player.full_name || "Unknown",
+      team: player.team_name || "Unknown",
+      salary: player.salary || 0,
+      points: player.total_points || 0,
+    })) || [];
+
+  const yourPlayers =
+    profileData.players?.map((player) => ({
+      id: player.id,
+      name: player.name || "Unknown",
+      team: player.team || "Unknown",
+      salary: player.price || 0,
+      points: player.points || 0,
+    })) || [];
+
+  const handleAddPlayer = async (playerId) => {
+    try {
+      const response = await fetch("/api/manager/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ addPlayer: playerId }),
+        credentials: "include",
+      });
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(result.message || "Failed to add player");
+      mutate();
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const handleRemovePlayer = async (playerId) => {
+    try {
+      const response = await fetch("/api/manager/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ removePlayer: playerId }),
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Failed to remove player");
+      mutate();
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -62,7 +126,8 @@ export default function ManagerProfile() {
         credentials: "include",
       });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.message || "Failed to update profile");
+      if (!response.ok)
+        throw new Error(result.message || "Failed to update profile");
       mutate();
       setIsEditing(false);
     } catch (error) {
@@ -77,7 +142,11 @@ export default function ManagerProfile() {
       transition={{ duration: 0.3, ease: "easeOut" }}
       className="w-full px-4 sm:px-6 lg:px-8 py-6 bg-gray-50 rounded-2xl shadow-xl"
     >
-      <ProfileHeader coverImage={profileData.coverPic} profileImage={profileData.profilePic} isPro={false} />
+      <ProfileHeader
+        coverImage={profileData.coverPic}
+        profileImage={profileData.profilePic}
+        isPro={false}
+      />
       <motion.div className="mt-6 bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-gray-200 w-full">
         <div className="flex flex-col sm:flex-row items-center justify-between border-b pb-4 mb-4">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center sm:text-left">
@@ -95,7 +164,10 @@ export default function ManagerProfile() {
             </button>
             <button
               onClick={async () => {
-                await fetch("/api/logout", { method: "POST", credentials: "include" });
+                await fetch("/api/logout", {
+                  method: "POST",
+                  credentials: "include",
+                });
                 router.push("/login");
               }}
               className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition"
@@ -106,61 +178,114 @@ export default function ManagerProfile() {
         </div>
         {!isEditing ? (
           <>
-            <p className="text-gray-500 text-sm sm:text-md mt-1">📧 Email: <span className="text-gray-800">{profileData.email}</span></p>
-            <p className="text-gray-500 text-sm sm:text-md mt-1">⚽ Team: <span className="text-blue-600 font-semibold">{profileData.team}</span></p>
+            <p className="text-gray-500 text-sm sm:text-md mt-1">
+              📧 Email:{" "}
+              <span className="text-gray-800">{profileData.email}</span>
+            </p>
+            <p className="text-gray-500 text-sm sm:text-md mt-1">
+              ⚽ Team:{" "}
+              <span className="text-blue-600 font-semibold">
+                {profileData.team}
+              </span>
+            </p>
           </>
         ) : (
           <div className="mt-4 space-y-4">
             {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-            <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="Enter Name" className="w-full p-2 border border-gray-300 rounded-md text-gray-900" />
-            <input type="text" name="team" value={formData.team} onChange={handleInputChange} placeholder="Enter Team Name" className="w-full p-2 border border-gray-300 rounded-md text-gray-900" />
-            <button onClick={handleUpdateProfile} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md w-full sm:w-auto">Save Changes</button>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              placeholder="Enter Name"
+              className="w-full p-2 border border-gray-300 rounded-md text-gray-900"
+            />
+            <input
+              type="text"
+              name="team"
+              value={formData.team}
+              onChange={handleInputChange}
+              placeholder="Enter Team Name"
+              className="w-full p-2 border border-gray-300 rounded-md text-gray-900"
+            />
+            <button
+              onClick={handleUpdateProfile}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md w-full sm:w-auto"
+            >
+              Save Changes
+            </button>
           </div>
         )}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-4">
-          <StatsCard icon={DollarSign} iconColor="text-green-500" label="Budget Spent" value={profileData.budgetSpent} />
-          <StatsCard icon={BarChart} iconColor="text-purple-500" label="Win %" value={profileData.winPercentage} />
-          <StatsCard icon={Trophy} iconColor="text-yellow-500" label="Matches Won" value={profileData.matchWin} />
-          <StatsCard icon={Users} iconColor="text-red-500" label="Manager Rank" value={`#${profileData.managerRank}`} />
+          <StatsCard
+            icon={DollarSign}
+            iconColor="text-green-500"
+            label="Budget Spent"
+            value={profileData.budgetSpent}
+          />
+          <StatsCard
+            icon={BarChart}
+            iconColor="text-purple-500"
+            label="Win %"
+            value={profileData.winPercentage}
+          />
+          <StatsCard
+            icon={Trophy}
+            iconColor="text-yellow-500"
+            label="Matches Won"
+            value={profileData.matchWin}
+          />
+          <StatsCard
+            icon={Users}
+            iconColor="text-red-500"
+            label="Manager Rank"
+            value={`#${profileData.managerRank}`}
+          />
         </div>
-         {/* Players Section */}
-         <div className="mt-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">MY PLAYERS</h2>
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {profileData.players.length > 0 ? (
-              profileData.players.map((player, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-white p-6 rounded-xl shadow-md border border-gray-200 hover:shadow-lg hover:scale-105 transition-all duration-300 ease-in-out"
+
+        <PlayersSection
+          profileData={profileData}
+          expandedPlayer={expandedPlayer}
+          setExpandedPlayer={setExpandedPlayer}
+        />
+        {/* ✅ Available Players List */}
+        {/* ✅ Available Players List */}
+        <div className="mt-6 bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-gray-200 w-full">
+          <h2 className="text-2xl font-bold text-gray-900 mb-5">
+            Available Players
+          </h2>
+
+          {/* Grid Container */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {availablePlayers.map((player) => (
+              <div
+                key={player.id}
+                className="p-5 border rounded-xl shadow-md flex items-center justify-between transition hover:shadow-lg hover:scale-105"
+              >
+                {/* Player Info */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {player.name}
+                  </h3>
+                  <p className="text-gray-600">{player.team}</p>
+                  <p className="text-gray-900 font-medium">
+                    ${player.salary} |{" "}
+                    <span className="text-blue-600">
+                      Points: {player.points}
+                    </span>
+                  </p>
+                </div>
+
+                {/* Add Player Button */}
+                <button
+                  onClick={() => handleAddPlayer(player.id)}
+                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition active:scale-95"
+                  aria-label={`Add ${player.name}`}
                 >
-                  <div className="flex items-center space-x-4">
-                    <img className="w-16 h-16 rounded-full" src={player.profilePic || "/default-profile.png"} alt={player.name || "Player"} />
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{player.name || "Loading..."}</h3>
-                      <p className="text-sm text-gray-600">{player.position || "Loading..."}</p>
-                    </div>
-                    <button
-                      className="ml-auto"
-                      onClick={() => setExpandedPlayer(expandedPlayer === index ? null : index)}
-                    >
-                      <ChevronDown className={`transform ${expandedPlayer === index ? "rotate-180" : ""} transition-transform`} size={20} />
-                    </button>
-                  </div>
-                  {expandedPlayer === index && (
-                    <div className="mt-4 space-y-2">
-                      <p className="text-gray-700"><strong>Price:</strong> ${player.price || "--"}</p>
-                      <p className="text-gray-700"><strong>Points:</strong> {player.points || "--"}</p>
-                      <p className="text-gray-700"><strong>Goals:</strong> {player.goals || "--"}</p>
-                    </div>
-                  )}
-                </motion.div>
-              ))
-            ) : (
-              <p className="text-center text-gray-500">No players found.</p>
-            )}
+                  <Plus size={16} /> Add
+                </button>
+              </div>
+            ))}
           </div>
         </div>
       </motion.div>
