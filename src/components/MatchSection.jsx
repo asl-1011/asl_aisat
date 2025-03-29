@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, easeInOut } from "framer-motion";
 import { Timer } from "lucide-react";
 import dynamic from "next/dynamic";
 
+// Dynamically load MatchCard to avoid SSR issues
 const MatchCard = dynamic(() => import("./MatchCard"), { ssr: false });
 
 const sectionVariants = {
@@ -13,13 +14,34 @@ const sectionVariants = {
 const matchVariants = {
   hidden: { opacity: 0, y: 10 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: "easeOut" } },
-  exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: "easeInOut" } },
+  exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: easeInOut } },
 };
 
 const CATEGORIES = ["all", "recent", "upcoming"];
 
-const MatchSection = ({ matchData = [] }) => {
+const MatchSection = ({ matchData = [], fetchMatches }) => {
   const [category, setCategory] = useState("all");
+
+  // Function to handle voting
+  const handleVote = async (matchId, voteType) => {
+    try {
+      const response = await fetch("/api/matches", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ matchId, vote: voteType }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Voting failed");
+
+      console.log("✅ Vote successful:", data);
+
+      // Fetch updated match data after voting
+      fetchMatches();
+    } catch (error) {
+      console.error("❌ Vote error:", error);
+    }
+  };
 
   // Memoized filtering for optimized rendering
   const filteredMatches = useMemo(() => {
@@ -69,6 +91,8 @@ const MatchSection = ({ matchData = [] }) => {
                   team2Score={match?.team2_score ?? "?"}
                   status={match?.status || "Unknown"}
                   description={match?.description || "No description available."}
+                  poll={{ votes1: match?.votes1 || 0, votes2: match?.votes2 || 0 }}
+                  onVote={(voteType) => handleVote(match?._id, voteType)}
                 />
               </motion.div>
             ))

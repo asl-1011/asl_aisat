@@ -4,7 +4,7 @@ import { useState, useEffect, lazy, Suspense, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import useSWR from "swr";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/admin/navbar";
 
 const NewsEditor = lazy(() => import("@/components/admin/NewsEditor"));
 const MatchControl = lazy(() => import("@/components/admin/MatchSection"));
