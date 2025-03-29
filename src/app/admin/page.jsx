@@ -1,36 +1,71 @@
 "use client";
 
 import { useState, useEffect, lazy, Suspense, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import useSWR from "swr";
 import Navbar from "@/components/Navbar";
 
 const NewsEditor = lazy(() => import("@/components/admin/NewsEditor"));
 const MatchControl = lazy(() => import("@/components/admin/MatchSection"));
 const RankingTable = lazy(() => import("@/components/RankingTable"));
 
-const AdminDashboard = () => {
-  const [matchData, setMatchData] = useState([]);
-  const [error, setError] = useState(null);
+const fetcher = (url) =>
+  fetch(url, { credentials: "include" }) // Ensures cookies are included
+    .then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch match data");
+      return res.json();
+    });
 
+const AdminDashboard = () => {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // 🔹 Check if user is an admin
   useEffect(() => {
-    const fetchData = async () => {
+    const checkAdmin = async () => {
       try {
-        const response = await fetch("/api/matches");
-        if (!response.ok) throw new Error("Failed to fetch match data");
-        const matchRes = await response.json();
-        setMatchData(matchRes);
-        setError(null); // Clear error if successful
-      } catch (err) {
-        setError("Failed to load match data.");
+        const res = await fetch("/api/admin/admin-check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include", // Ensure session cookies are included
+          body: JSON.stringify({ action: "verify_admin" }),
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.authenticated || !data.isAdmin) {
+          throw new Error("Unauthorized");
+        }
+
+        setIsAdmin(true);
+      } catch (error) {
+        router.push("/"); // Redirect non-admins
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchData();
-    const interval = setInterval(fetchData, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
+    checkAdmin();
+  }, [router]);
+
+  // Fetch match data (only if admin)
+  const { data: matchData, error, isLoading: isMatchLoading } = useSWR(
+    isAdmin ? "/api/matches" : null,
+    fetcher,
+    { refreshInterval: 5 * 60 * 1000 }
+  );
 
   const MemoizedNavbar = useMemo(() => <Navbar />, []);
+
+  // 🔹 Show loading spinner while verifying admin access
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <LoadingSpinner text="Checking Admin Access..." />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -64,8 +99,10 @@ const AdminDashboard = () => {
           </Suspense>
 
           {/* Match Control with Error Handling */}
-          {error ? (
-            <ErrorBox error={error} />
+          {isMatchLoading ? (
+            <SkeletonLoader text="Loading Match Data..." />
+          ) : error ? (
+            <ErrorBox error={error.message} />
           ) : (
             <Suspense fallback={<SkeletonLoader text="Loading Match Control..." />}>
               <MatchControl matchData={matchData} />
@@ -96,6 +133,14 @@ const SkeletonLoader = ({ text }) => (
 const ErrorBox = ({ error }) => (
   <div className="h-[400px] bg-red-50 rounded-lg border border-red-100 shadow-sm p-4 text-red-700 flex items-center justify-center">
     <span>Error: {error}</span>
+  </div>
+);
+
+/* Loading Spinner for Admin Check */
+const LoadingSpinner = ({ text }) => (
+  <div className="flex flex-col items-center space-y-2">
+    <div className="w-8 h-8 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin"></div>
+    <span className="text-gray-700 text-sm">{text}</span>
   </div>
 );
 
