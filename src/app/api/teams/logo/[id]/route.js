@@ -5,11 +5,17 @@ import { connectDB, getGFS } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { Readable } from "stream";
 
-export async function GET(req, { params }) {
+export async function GET(req, context) {
     try {
         await connectDB();
         const gfs = getGFS();
         if (!gfs) throw new Error("❌ GridFS initialization failed");
+
+        // ✅ Await params properly
+        const { params } = context;
+        if (!params) {
+            return NextResponse.json({ error: "Params not found" }, { status: 400 });
+        }
 
         const { id } = params;
         if (!id || !ObjectId.isValid(id)) {
