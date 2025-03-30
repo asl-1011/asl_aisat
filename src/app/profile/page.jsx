@@ -55,7 +55,7 @@ export default function ManagerProfile() {
     email: "Loading...",
     team: "Loading...",
     budgetSpent: "--",
-    budget_balance: "--",
+    budgetBalance: "--",
     matchWin: "--",
     managerRank: "--",
     profilePic: "/default-profile.png",
@@ -227,7 +227,7 @@ export default function ManagerProfile() {
             icon={BarChart}
             iconColor="text-purple-500"
             label="Balance"
-            value={profileData.budget_balance}
+            value={profileData.budgetBalance}
           />
           
           <StatsCard
