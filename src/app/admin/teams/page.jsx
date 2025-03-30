@@ -13,10 +13,12 @@ export default function AdminDashboard() {
     const [showEditModal, setShowEditModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [teamLogo, setTeamLogo] = useState(null); 
-
+    const [teamLogo, setTeamLogo] = useState(null);
+    const [showAddPlayerModal, setShowAddPlayerModal] = useState(false);
+    
     const initialTeamState = { team_name: "", manager: "", team_logo: "", players: [] };
     const [newTeam, setNewTeam] = useState(initialTeamState);
+    const [newPlayer, setNewPlayer] = useState({ name: "", position: "", team: "", photo: null }); // Added photo to the player state
 
     useEffect(() => {
         const fetchData = async () => {
@@ -54,8 +56,14 @@ export default function AdminDashboard() {
         setShowEditModal(true);
     };
 
+    const openAddPlayerModal = () => {
+        setNewPlayer({ name: "", position: "", team: "", photo: null }); // Reset player state
+        setShowAddPlayerModal(true);
+    };
+
     const closeModal = () => {
         setShowEditModal(false);
+        setShowAddPlayerModal(false);
         setSelectedTeam(null);
         setSelectedPlayers([]);
         setNewTeam(initialTeamState);
@@ -78,7 +86,7 @@ export default function AdminDashboard() {
 
             const res = await fetch(url, {
                 method,
-                body: formData, // ✅ Send as FormData
+                body: formData,
             });
 
             if (!res.ok) throw new Error(`Failed to ${selectedTeam ? "update" : "add"} team`);
@@ -101,6 +109,33 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleAddPlayer = async () => {
+        const formData = new FormData();
+        formData.append("name", newPlayer.name);
+        formData.append("position", newPlayer.position);
+        formData.append("team", newPlayer.team);
+
+        if (newPlayer.photo) {
+            formData.append("profilePic", newPlayer.photo);
+        }
+
+        try {
+            const res = await fetch("/api/admin/addplayer", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!res.ok) throw new Error("Failed to add player");
+
+            const data = await res.json();
+            setPlayers([...players, data]);
+
+            closeModal();
+        } catch (err) {
+            console.error("Error adding player:", err);
+        }
+    };
+
     if (loading) return <div className="text-center text-white text-xl p-10">Loading teams...</div>;
     if (error) return <div className="text-center text-red-500 p-10">Error: {error}</div>;
 
@@ -110,6 +145,9 @@ export default function AdminDashboard() {
                 <h1 className="text-4xl font-extrabold text-center mb-8 drop-shadow-lg">Admin Dashboard</h1>
                 <button onClick={openNewTeamModal} className="flex items-center gap-2 bg-white text-purple-700 px-5 py-3 rounded-lg shadow-lg hover:bg-purple-100 transition-all">
                     <PlusCircle size={20} /> Add Team
+                </button>
+                <button onClick={openAddPlayerModal} className="flex items-center gap-2 bg-white text-purple-700 px-5 py-3 rounded-lg shadow-lg hover:bg-purple-100 transition-all mt-4">
+                    <PlusCircle size={20} /> Add Player
                 </button>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
@@ -168,6 +206,41 @@ export default function AdminDashboard() {
 
                             <button onClick={handleSaveTeam} className="mt-4 w-full bg-purple-700 text-white py-2 rounded-lg hover:bg-purple-900 transition-all">
                                 {selectedTeam ? "Update Team" : "Add Team"}
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+
+                {/* Add Player Modal */}
+                {showAddPlayerModal && (
+                    <motion.div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
+                        <motion.div className="relative bg-white text-black p-6 rounded-xl shadow-xl w-full max-w-lg">
+                            <button onClick={closeModal} className="absolute top-4 right-5 text-gray-500 hover:text-gray-800"><X size={24} /></button>
+                            <h2 className="text-2xl font-bold mb-3">Add New Player</h2>
+
+                            <input type="text" placeholder="Player Name" value={newPlayer.name} 
+                                onChange={(e) => setNewPlayer({ ...newPlayer, name: e.target.value })} className="mt-3 w-full p-2 border rounded-md" />
+
+                            <input type="text" placeholder="Position" value={newPlayer.position} 
+                                onChange={(e) => setNewPlayer({ ...newPlayer, position: e.target.value })} className="mt-3 w-full p-2 border rounded-md" />
+
+                            <select 
+                                value={newPlayer.team} 
+                                onChange={(e) => setNewPlayer({ ...newPlayer, team: e.target.value })} 
+                                className="mt-3 w-full p-2 border rounded-md"
+                            >
+                                <option value="">Select Team</option>
+                                {teams.map((team) => (
+                                    <option key={team._id} value={team._id}>{team.team_name}</option>
+                                ))}
+                            </select>
+
+                            <input type="file" accept="image/*"
+                                onChange={(e) => setNewPlayer({ ...newPlayer, photo: e.target.files[0] })} 
+                                className="mt-3 w-full p-2 border rounded-md" />
+
+                            <button onClick={handleAddPlayer} className="mt-4 w-full bg-purple-700 text-white py-2 rounded-lg hover:bg-purple-900 transition-all">
+                                Add Player
                             </button>
                         </motion.div>
                     </motion.div>
