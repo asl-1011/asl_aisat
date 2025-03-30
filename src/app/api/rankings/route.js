@@ -12,11 +12,13 @@ export async function GET() {
       .select("team_name team_logo wins losses draws goals_scored goals_conceded")
       .lean();
     
-    // Calculate points based on win (3), draw (1), loss (0)
+    // Process team data and calculate points
     const rankings = teams.map(team => ({
       team_id: team._id,
       team_name: team.team_name,
-      team_logo: team.team_logo || null, // Ensure it's either a valid URL or null
+      team_logo: team.team_logo?.startsWith("http")
+        ? team.team_logo
+        : `/api/teams/logo/${team.team_logo}`, // Correcting logo handling
       wins: team.wins,
       draws: team.draws,
       losses: team.losses,
