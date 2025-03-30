@@ -84,7 +84,7 @@ export default function TeamList() {
                                                     className="p-4 bg-gray-100 rounded-lg shadow-md my-2 flex items-center gap-4 border border-gray-300"
                                                     whileHover={{ scale: 1.02 }}
                                                 >
-                                                    <img src={player.profilePic} alt={player.name} className="w-12 h-12 rounded-full" />
+                                                    <img src={`/api/teams/logo/${player.profilePic}`} alt={player.name} className="w-12 h-12 rounded-full" />
                                                     <div>
                                                         <h4 className="text-sm font-bold">{player.name}</h4>
                                                         <p className="text-xs text-gray-600">{player.position}</p>
