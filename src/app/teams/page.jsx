@@ -37,7 +37,7 @@ export default function TeamList() {
                             whileTap={{ scale: 0.98 }}
                             onClick={() => openModal(team)}
                         >
-                            <img src={team.team_logo} alt={team.team_name} className="w-16 h-16 rounded-full" />
+                            <img src={`/api/teams/logo/${team.team_logo}`} alt={team.team_name} className="w-16 h-16 rounded-full" />
                             <div>
                                 <h2 className="text-lg font-semibold">{team.team_name}</h2>
                                 <p className="text-sm text-gray-600">Manager: {team.manager}</p>
@@ -56,7 +56,7 @@ export default function TeamList() {
                         >
                             <button onClick={closeModal} className="absolute top-4 right-5 text-2xl text-gray-600 hover:text-gray-800">×</button>
                             <div className="text-center">
-                                <img src={selectedTeam.team_logo} alt={selectedTeam.team_name} className="w-24 h-24 mx-auto rounded-full" />
+                                <img src={`/api/teams/logo/${selectedTeam.team_logo}`} alt={selectedTeam.team_name} className="w-24 h-24 mx-auto rounded-full" />
                                 <h2 className="text-2xl font-bold mt-3">{selectedTeam.team_name}</h2>
                                 <p className="text-gray-600">Manager: {selectedTeam.manager}</p>
                             </div>
