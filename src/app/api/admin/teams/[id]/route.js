@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import connectDB from "@/lib/mongodb";
+import {connectDB } from "@/lib/mongodb";
 import Team from "@/models/team";
 
 // Update a Team (PUT)
