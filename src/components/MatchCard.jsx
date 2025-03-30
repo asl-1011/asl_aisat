@@ -2,13 +2,11 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-const isValidImageUrl = (url) => typeof url === "string" && url.startsWith("http");
-
 const MatchCard = ({
   team1 = "Unknown Team",
   team2 = "Unknown Team",
-  team1Logo = null,
-  team2Logo = null,
+  team1Logo = "/default-logo.png", // Provide a default fallback image
+  team2Logo = "/default-logo.png",
   team1Score = null,
   team2Score = null,
   status = "Upcoming",
@@ -34,14 +32,15 @@ const MatchCard = ({
     if (voted) return;
     setVoted(true);
     try {
+      await onVote(voteType); // Ensure the request is successful before updating UI
       if (voteType === "votes1") {
         setVotes1((prev) => prev + 1);
       } else {
         setVotes2((prev) => prev + 1);
       }
-      await onVote(voteType);
     } catch (error) {
       console.error("Error during voting process:", error);
+      setVoted(false); // Re-enable voting in case of failure
     }
   };
 
@@ -49,11 +48,7 @@ const MatchCard = ({
     <div className="p-5 border border-gray-200 rounded-2xl bg-white shadow-md hover:shadow-lg transition-all duration-300">
       <div className="flex items-center justify-between">
         <div className="flex flex-col items-center">
-          {isValidImageUrl(team1Logo) ? (
-            <Image src={team1Logo} alt={`${team1} logo`} width={64} height={64} className="object-cover rounded-full border-2 border-gray-300" />
-          ) : (
-            <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">🏆</div>
-          )}
+          <Image src={`/api/teams/logo/${team1Logo}`} alt={team1} width={50} height={50} className="rounded-full" />
           <span className="font-semibold text-gray-700 text-sm text-center mt-2">{team1}</span>
         </div>
 
@@ -63,11 +58,7 @@ const MatchCard = ({
         </div>
 
         <div className="flex flex-col items-center">
-          {isValidImageUrl(team2Logo) ? (
-            <Image src={team2Logo} alt={`${team2} logo`} width={64} height={64} className="object-cover rounded-full border-2 border-gray-300" />
-          ) : (
-            <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">🏆</div>
-          )}
+          <Image src={`/api/teams/logo/${team2Logo}`} alt={team2} width={50} height={50} className="rounded-full" />
           <span className="font-semibold text-gray-700 text-sm text-center mt-2">{team2}</span>
         </div>
       </div>
@@ -75,12 +66,10 @@ const MatchCard = ({
       <p className="text-center text-sm text-gray-600 mt-3">{description}</p>
 
       <div className="mt-4">
-  <button className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-200 rounded-full w-full text-blue-500" onClick={() => setShowPoll(!showPoll)}>
-    {showPoll ? "Hide Poll" : <span className="text-gray">Vote Now</span>}
-    {showPoll ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-  </button>
-
-
+        <button className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-200 rounded-full w-full text-blue-500" onClick={() => setShowPoll(!showPoll)}>
+          {showPoll ? "Hide Poll" : <span className="text-gray">Vote Now</span>}
+          {showPoll ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+        </button>
 
         {showPoll && (
           <div className="mt-3">

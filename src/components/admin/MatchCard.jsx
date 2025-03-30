@@ -42,7 +42,8 @@ const MatchCard = ({
         {/* Left Team */}
         <div className="flex flex-col items-center">
           <img
-            src={team1Logo}
+            src={`/api/teams/logo/${team1Logo}`}
+          
             alt={`${team1} logo`}
             className="w-14 h-14 object-cover rounded-full border-2 border-gray-300"
             onError={(e) => (e.target.src = "/default-logo.png")}
@@ -69,7 +70,7 @@ const MatchCard = ({
         {/* Right Team */}
         <div className="flex flex-col items-center">
           <img
-            src={team2Logo}
+            src={`/api/teams/logo/${team2Logo}`}
             alt={`${team2} logo`}
             className="w-14 h-14 object-cover rounded-full border-2 border-gray-300"
             onError={(e) => (e.target.src = "/default-logo.png")}
