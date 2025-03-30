@@ -3,17 +3,27 @@
 import { NextResponse } from "next/server";
 import { connectDB, getGFS } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import News from "@/models/News"; // Ensure this model is correctly imported
+
+// ✅ DELETE News by ID
 export async function DELETE(req, { params }) {
   try {
     await connectDB();
+    
     const { id } = params;
-    if (!ObjectId.isValid(id)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    if (!id || !ObjectId.isValid(id)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    }
 
     const news = await News.findByIdAndDelete(id);
-    if (!news) return NextResponse.json({ error: "News not found" }, { status: 404 });
+    if (!news) {
+      return NextResponse.json({ error: "News not found" }, { status: 404 });
+    }
 
     const gfs = getGFS();
-    if (news.imageId) await gfs.delete(new ObjectId(news.imageId));
+    if (gfs && news.imageId) {
+      await gfs.delete(new ObjectId(news.imageId));
+    }
 
     return NextResponse.json({ message: "News deleted successfully" }, { status: 200 });
   } catch (error) {
@@ -22,23 +32,22 @@ export async function DELETE(req, { params }) {
   }
 }
 
+// ✅ GET News Image by ID
 export async function GET(req, { params }) {
   try {
     await connectDB();
     const gfs = getGFS();
+
     if (!gfs) throw new Error("❌ GridFS initialization failed");
 
-    if (!params?.id) {
-      return NextResponse.json({ error: "Missing file ID" }, { status: 400 });
-    }
-
     const { id } = params;
-    if (!ObjectId.isValid(id)) {
+    if (!id || !ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
 
     const fileCursor = gfs.find({ _id: new ObjectId(id) });
     const files = await fileCursor.toArray();
+
     if (!files.length) {
       return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
@@ -46,16 +55,7 @@ export async function GET(req, { params }) {
     const file = files[0];
     const downloadStream = gfs.openDownloadStream(file._id);
 
-    // Convert stream into a readable response
-    const readableStream = new ReadableStream({
-      start(controller) {
-        downloadStream.on("data", (chunk) => controller.enqueue(chunk));
-        downloadStream.on("end", () => controller.close());
-        downloadStream.on("error", (err) => controller.error(err));
-      },
-    });
-
-    return new NextResponse(readableStream, {
+    return new NextResponse(downloadStream, {
       headers: {
         "Content-Type": file.contentType,
         "Cache-Control": "public, max-age=31536000",
