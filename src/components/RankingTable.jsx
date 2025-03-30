@@ -42,7 +42,6 @@ const RankingTable = () => {
             <thead className="bg-gray-50 text-gray-800">
               <tr className="border-b">
                 <th className="px-3 sm:px-5 py-2 sm:py-3 text-left font-semibold w-[40%]">Team</th>
-                <th className="px-2 sm:px-3 py-2 sm:py-3 text-center font-semibold w-[12%]">MP</th>
                 <th className="px-2 sm:px-3 py-2 sm:py-3 text-center font-semibold w-[12%]">W</th>
                 <th className="px-2 sm:px-3 py-2 sm:py-3 text-center font-semibold w-[12%]">D</th>
                 <th className="px-2 sm:px-3 py-2 sm:py-3 text-center font-semibold w-[12%]">L</th>
@@ -60,7 +59,6 @@ const RankingTable = () => {
                     />
                     <span className="font-medium text-gray-900 truncate">{team.team_name}</span>
                   </td>
-                  <td className="px-2 sm:px-3 py-2 sm:py-3 text-center text-gray-700">{team.matches_played}</td>
                   <td className="px-2 sm:px-3 py-2 sm:py-3 text-center text-gray-700">{team.wins}</td>
                   <td className="px-2 sm:px-3 py-2 sm:py-3 text-center text-gray-700">{team.draws}</td>
                   <td className="px-2 sm:px-3 py-2 sm:py-3 text-center text-gray-700">{team.losses}</td>

@@ -1,45 +1,35 @@
 "use server";
 
 import { NextResponse } from "next/server";
+import { connectDB } from "@/lib/mongodb";
+import Team from "@/models/team"; // Ensure the correct path to your Team model
 
 export async function GET() {
-  const rankings = [
-    {
-      team_id: "team1",
-      team_name: "Kerala Blasters",
-      team_logo:
-        "https://ssl.gstatic.com/onebox/media/sports/logos/_5VS8XluJxBhUh29V2yB_Q_96x96.png",
-      matches_played: 10,
-      wins: 7,
-      draws: 2,
-      losses: 1,
-      points: 23,
-    },
-    {
-      team_id: "team2",
-      team_name: "Jamshedpur FC",
-      team_logo:
-        "https://ssl.gstatic.com/onebox/media/sports/logos/2jNyU8xC7U5Kg5oA_EOpSA_96x96.png",
-      matches_played: 10,
-      wins: 6,
-      draws: 3,
-      losses: 1,
-      points: 21,
-    },
-    {
-      team_id: "team3",
-      team_name: "Mumbai City FC",
-      team_logo:
-        "https://ssl.gstatic.com/onebox/media/sports/logos/pFOymUjummnYYqKp__o-LQ_96x96.png",
-      matches_played: 10,
-      wins: 5,
-      draws: 2,
-      losses: 3,
-      points: 17,
-    },
-  ];
+  try {
+    await connectDB();
+    
+    const teams = await Team.find()
+      .select("team_name team_logo wins losses draws goals_scored goals_conceded")
+      .lean();
+    
+    // Calculate points based on win (3), draw (1), loss (0)
+    const rankings = teams.map(team => ({
+      team_id: team._id,
+      team_name: team.team_name,
+      team_logo: team.team_logo || null, // Ensure it's either a valid URL or null
+      wins: team.wins,
+      draws: team.draws,
+      losses: team.losses,
+      goals_scored: team.goals_scored,
+      goals_conceded: team.goals_conceded,
+      points: team.wins * 3 + team.draws * 1,
+    })).sort((a, b) => b.points - a.points); // Sort by points descending
 
-  return NextResponse.json(rankings);
+    return NextResponse.json(rankings);
+  } catch (error) {
+    console.error("Error fetching team rankings:", error);
+    return NextResponse.json({ error: "Failed to fetch team rankings" }, { status: 500 });
+  }
 }
 
 export async function POST() {

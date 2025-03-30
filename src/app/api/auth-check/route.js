@@ -6,8 +6,9 @@ import { adminAuth } from "@/lib/firebaseAdmin"; // Firebase Admin SDK
 
 export async function POST() {
   try {
-    // ✅ Get session cookie from request
-    const sessionCookie = await cookies().get("session")?.value;
+    // ✅ Await cookies() to correctly retrieve session cookie
+    const sessionStore = await cookies();
+    const sessionCookie = sessionStore.get("session")?.value;
 
     if (!sessionCookie) {
       return NextResponse.json({ authenticated: false }, { status: 401 });

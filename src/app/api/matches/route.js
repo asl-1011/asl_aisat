@@ -39,7 +39,7 @@ export async function GET(req) {
 export async function POST(req) {
   try {
     await connectDB();
-    const { matchId, vote, userId } = await req.json(); // userId added for vote tracking
+    const { matchId, vote } = await req.json();
 
     if (!matchId || !["votes1", "votes2"].includes(vote)) {
       return NextResponse.json({ error: "Invalid matchId or vote type" }, { status: 400 });
@@ -50,14 +50,8 @@ export async function POST(req) {
       return NextResponse.json({ error: "Match not found" }, { status: 404 });
     }
 
-    // Prevent multiple votes by checking if userId exists in voters array
-    if (match.voters.includes(userId)) {
-      return NextResponse.json({ error: "You have already voted" }, { status: 403 });
-    }
-
-    // Update vote count & store user vote
+    // Update vote count
     match.poll[vote] += 1;
-    match.voters.push(userId);
     await match.save();
 
     return NextResponse.json({ message: "Vote registered successfully", poll: match.poll }, { status: 200 });

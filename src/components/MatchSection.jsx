@@ -19,11 +19,18 @@ const matchVariants = {
 
 const CATEGORIES = ["all", "recent", "upcoming"];
 
-const MatchSection = ({ matchData = [], fetchMatches }) => {
+const MatchSection = ({ matchData = [] }) => {
   const [category, setCategory] = useState("all");
 
   // Function to handle voting
   const handleVote = async (matchId, voteType) => {
+    console.log("🟡 handleVote triggered with:", { matchId, voteType });
+
+    if (!matchId) {
+      console.error("❌ Invalid match ID", matchId);
+      return;
+    }
+
     try {
       const response = await fetch("/api/matches", {
         method: "POST",
@@ -35,9 +42,6 @@ const MatchSection = ({ matchData = [], fetchMatches }) => {
       if (!response.ok) throw new Error(data.error || "Voting failed");
 
       console.log("✅ Vote successful:", data);
-
-      // Fetch updated match data after voting
-      fetchMatches();
     } catch (error) {
       console.error("❌ Vote error:", error);
     }
@@ -91,7 +95,7 @@ const MatchSection = ({ matchData = [], fetchMatches }) => {
                   team2Score={match?.team2_score ?? "?"}
                   status={match?.status || "Unknown"}
                   description={match?.description || "No description available."}
-                  poll={{ votes1: match?.votes1 || 0, votes2: match?.votes2 || 0 }}
+                  poll={match?.poll || { votes1: 0, votes2: 0 }}
                   onVote={(voteType) => handleVote(match?._id, voteType)}
                 />
               </motion.div>

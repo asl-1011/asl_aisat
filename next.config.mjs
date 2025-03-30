@@ -1,4 +1,9 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
-
-export default nextConfig;
+const nextConfig = {
+    images: {
+      domains: ["ssl.gstatic.com"], // Add allowed external image domains here
+    },
+  };
+  
+  export default nextConfig;
+  

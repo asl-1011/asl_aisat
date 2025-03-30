@@ -12,7 +12,12 @@ const TeamSchema = new mongoose.Schema({
   team_logo: { type: String, required: true },
   manager: { type: String, required: true },
   players: [{ type: mongoose.Schema.Types.ObjectId, ref: "Player" }], // Reference Players
-  matches: [MatchSchema] // Embedded Matches
+  matches: [MatchSchema], // Embedded Matches
+  wins: { type: Number, default: 0 },
+  losses: { type: Number, default: 0 },
+  draws: { type: Number, default: 0 },
+  goals_scored: { type: Number, default: 0 },
+  goals_conceded: { type: Number, default: 0 }
 });
 
 // Ensure model registration

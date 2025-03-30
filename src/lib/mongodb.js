@@ -22,10 +22,7 @@ export const connectDB = async () => {
     console.info("⏳ Connecting to MongoDB...");
 
     cached.promise = mongoose
-      .connect(MONGODB_URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      })
+      .connect(MONGODB_URI)
       .then((mongoose) => {
         console.info(`✅ MongoDB Connected: ${mongoose.connection.host}`);
 
