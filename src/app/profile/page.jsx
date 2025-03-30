@@ -55,7 +55,7 @@ export default function ManagerProfile() {
     email: "Loading...",
     team: "Loading...",
     budgetSpent: "--",
-    winPercentage: "--",
+    budget_balance: "--",
     matchWin: "--",
     managerRank: "--",
     profilePic: "/default-profile.png",
@@ -226,15 +226,10 @@ export default function ManagerProfile() {
           <StatsCard
             icon={BarChart}
             iconColor="text-purple-500"
-            label="Win %"
-            value={profileData.winPercentage}
+            label="Balance"
+            value={profileData.budget_balance}
           />
-          <StatsCard
-            icon={Trophy}
-            iconColor="text-yellow-500"
-            label="Matches Won"
-            value={profileData.matchWin}
-          />
+          
           <StatsCard
             icon={Users}
             iconColor="text-red-500"
