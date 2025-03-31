@@ -120,8 +120,8 @@ export async function PATCH(req) {
 
       // ✅ Update Manager's Team & Budget
       manager.players.push(player._id);
-      manager.budget_balance -= player.salary;
-      manager.budget_spent += player.salary;
+      manager.budget_balance = parseFloat(manager.budget_balance.toFixed(2));
+      manager.budget_spent = parseFloat(manager.budget_spent.toFixed(2));
       console.log(`✅ Player ${player.full_name} added to ${manager.name}'s team`);
 
       playerAdded = true; // Set flag to update rankings
