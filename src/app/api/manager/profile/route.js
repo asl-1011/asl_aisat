@@ -1,6 +1,7 @@
 "use server";
 
 import { NextResponse } from "next/server";
+import { updateAllManagersPoints } from "@/lib/updateManagersPoints";
 import { cookies } from "next/headers";
 import { adminAuth } from "@/lib/firebaseAdmin";
 import Manager from "@/models/fantasy/Manager.js";
@@ -100,6 +101,8 @@ export async function PATCH(req) {
     const manager = await Manager.findOne({ email });
     if (!manager) throw new UnauthorizedError("Manager profile not found");
 
+    let playerAdded = false; // Track if a player was added
+
     // ✅ Handle Player Addition
     if (updates.addPlayer) {
       const player = await Player.findById(updates.addPlayer);
@@ -120,6 +123,8 @@ export async function PATCH(req) {
       manager.budget_balance -= player.salary;
       manager.budget_spent += player.salary;
       console.log(`✅ Player ${player.full_name} added to ${manager.name}'s team`);
+
+      playerAdded = true; // Set flag to update rankings
     }
 
     // ✅ Handle Player Removal
@@ -149,6 +154,13 @@ export async function PATCH(req) {
 
     await manager.save();
     console.log("✅ Profile Updated:", updates);
+
+    // 🚀 If a player was added, update all managers' rankings
+    if (playerAdded) {
+      console.log("📊 Updating Manager Rankings...");
+      await updateAllManagersPoints();
+    }
+
     return NextResponse.json({ success: true, message: "Profile updated successfully" });
   } catch (error) {
     console.error("❌ Profile Update Error:", error.message || error);
