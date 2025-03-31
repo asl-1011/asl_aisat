@@ -51,53 +51,56 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <motion.header className="bg-white border-b sticky top-0 z-50 shadow-sm">
-        <div className="max-w-full w-full px-4 py-3 flex justify-between items-center">
-          <motion.div
-            className="flex items-center space-x-3"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+      <motion.header className="bg-white border-b sticky top-0 z-50 shadow-md">
+  <div className="max-w-full w-full px-4 sm:px-6 py-2 flex justify-between items-center">
+    {/* Branding with ASL Logo */}
+    <motion.div
+      className="flex items-center space-x-2 sm:space-x-3 cursor-pointer"
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <img
+        src="/assets/logo-asl.png" // Replace with actual ASL logo path
+        alt="ASL Logo"
+        className="h-8 sm:h-10 w-auto object-contain"
+      />
+    </motion.div>
+
+    {/* Action Buttons */}
+    <div className="flex space-x-1 sm:space-x-2">
+      <button
+        className="bg-indigo-600 text-white px-2 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all shadow-md hover:bg-indigo-700 hover:scale-105"
+        onClick={() => router.push('/admin')}
+      >
+        Admin
+      </button>
+      {isLoggedIn ? (
+        <button
+          className="bg-red-500 text-white px-2 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all shadow-md hover:bg-red-600 hover:scale-105"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
+      ) : (
+        <>
+          <button
+            className="bg-gray-300 text-gray-900 px-2 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all shadow-md hover:bg-gray-400 hover:scale-105"
+            onClick={() => router.push('/login')}
           >
-            <div className="bg-gradient-to-r from-gray-300 to-gray-100 rounded-xl h-10 w-10 flex items-center justify-center shadow-md">
-              <span className="font-bold text-sm text-gray-900">ASL</span>
-            </div>
-            <span className="text-lg font-bold text-gray-900">
-              ASL League
-            </span>
-          </motion.div>
-          <div className="flex space-x-2">
-            <button
-              className="bg-blue-500 text-white px-4 py-1.5 text-sm rounded-full font-semibold transition-all shadow-md hover:bg-blue-600 hover:scale-105"
-              onClick={() => router.push("/admin")}
-            >
-              Admin
-            </button>
-            {isLoggedIn ? (
-              <button
-                className="bg-red-500 text-white px-4 py-1.5 text-sm rounded-full font-semibold transition-all shadow-md hover:bg-red-600 hover:scale-105"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
-            ) : (
-              <>
-                <button
-                  className="bg-gray-200 text-gray-900 px-4 py-1.5 text-sm rounded-full font-semibold transition-all shadow-md hover:bg-gray-300 hover:scale-105"
-                  onClick={() => router.push("/login")}
-                >
-                  Login
-                </button>
-                <button
-                  className="bg-gray-200 text-gray-900 px-4 py-1.5 text-sm rounded-full font-semibold transition-all shadow-md hover:bg-gray-300 hover:scale-105"
-                  onClick={() => router.push("/signup")}
-                >
-                  Sign Up
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </motion.header>
+            Login
+          </button>
+          <button
+            className="bg-gray-900 text-white px-2 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all shadow-md hover:bg-black hover:scale-105"
+            onClick={() => router.push('/signup')}
+          >
+            Sign Up
+          </button>
+        </>
+      )}
+    </div>
+  </div>
+</motion.header>
+
 
       <main className="w-full px-4 py-6 pb-24">
         <motion.div
