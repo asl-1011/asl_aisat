@@ -120,8 +120,8 @@ export async function PATCH(req) {
 
       // ✅ Update Manager's Team & Budget
       manager.players.push(player._id);
-      manager.budget_balance = parseFloat(manager.budget_balance.toFixed(2));
-      manager.budget_spent = parseFloat(manager.budget_spent.toFixed(2));
+      manager.budget_balance = Number((manager.budget_balance - player.salary).toFixed(2));
+      manager.budget_spent = Number((manager.budget_spent + player.salary).toFixed(2));
       console.log(`✅ Player ${player.full_name} added to ${manager.name}'s team`);
 
       playerAdded = true; // Set flag to update rankings
@@ -139,8 +139,8 @@ export async function PATCH(req) {
 
       // ✅ Update Manager's Team & Budget
       manager.players.splice(playerIndex, 1);
-      manager.budget_balance += removedPlayer.salary;
-      manager.budget_spent -= removedPlayer.salary;
+      manager.budget_balance = Number((manager.budget_balance + removedPlayer.salary).toFixed(2));
+      manager.budget_spent = Number((manager.budget_spent - removedPlayer.salary).toFixed(2));
       console.log(`✅ Player ${removedPlayer.full_name} removed from ${manager.name}'s team`);
     }
 
