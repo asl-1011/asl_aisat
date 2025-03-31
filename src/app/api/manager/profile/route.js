@@ -67,12 +67,12 @@ const fetchOrCreateManagerAndPlayers = async (email) => {
         name: "New Manager",
         team: "My Fantasy Team",
         budget_spent: 0,
-        budget_balance: 15, // Initial budget
+        budget_balance: 25, // Initial budget
         win_percentage: 0,
         match_win: 0,
         cover_pic: null,
         profile_pic: null,
-        manager_rank: 1000,
+        manager_rank: 100,
         players: [],
       });
     }
