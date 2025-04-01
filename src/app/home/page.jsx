@@ -67,13 +67,13 @@ const Index = () => {
     </motion.div>
 
     {/* Action Buttons */}
-    <div className="flex space-x-1 sm:space-x-2">
-      <button
+   <div className="flex space-x-1 sm:space-x-2">
+   {/*<button
         className="bg-indigo-600 text-white px-2 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all shadow-md hover:bg-indigo-700 hover:scale-105"
         onClick={() => router.push('/admin')}
       >
         Admin
-      </button>
+      </button>*/}
       {isLoggedIn ? (
         <button
           className="bg-red-500 text-white px-2 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all shadow-md hover:bg-red-600 hover:scale-105"
