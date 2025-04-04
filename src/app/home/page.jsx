@@ -14,6 +14,7 @@ const Index = () => {
   const router = useRouter();
   const [matchData, setMatchData] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -24,12 +25,13 @@ const Index = () => {
           method: "POST",
           credentials: "include",
         })
-          .then((res) => (res.ok ? res.json() : { authenticated: false }))
-          .catch(() => ({ authenticated: false }));
+          .then((res) => (res.ok ? res.json() : { authenticated: false, isAdmin: false }))
+          .catch(() => ({ authenticated: false, isAdmin: false }));
 
         const [matchData, authData] = await Promise.all([matchRes, authRes]);
         setMatchData(matchData);
         setIsLoggedIn(authData.authenticated);
+        setIsAdmin(authData.isAdmin);
         setError(null); // Reset error state on successful fetch
       } catch (err) {
         setError("Failed to load data.");
@@ -44,6 +46,7 @@ const Index = () => {
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
     setIsLoggedIn(false);
+    setIsAdmin(false);
     router.refresh();
   };
 
@@ -52,55 +55,56 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <motion.header className="bg-white border-b sticky top-0 z-50 shadow-md">
-  <div className="max-w-full w-full px-4 sm:px-6 py-2 flex justify-between items-center">
-    {/* Branding with ASL Logo */}
-    <motion.div
-      className="flex items-center space-x-2 sm:space-x-3 cursor-pointer"
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-    >
-      <img
-        src="/assets/logo-asl.png" // Replace with actual ASL logo path
-        alt="ASL Logo"
-        className="h-8 sm:h-10 w-auto object-contain"
-      />
-    </motion.div>
-
-    {/* Action Buttons */}
-   <div className="flex space-x-1 sm:space-x-2">
-   {/*<button
-        className="bg-indigo-600 text-white px-2 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all shadow-md hover:bg-indigo-700 hover:scale-105"
-        onClick={() => router.push('/admin')}
-      >
-        Admin
-      </button>*/}
-      {isLoggedIn ? (
-        <button
-          className="bg-red-500 text-white px-2 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all shadow-md hover:bg-red-600 hover:scale-105"
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
-      ) : (
-        <>
-          <button
-            className="bg-gray-300 text-gray-900 px-2 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all shadow-md hover:bg-gray-400 hover:scale-105"
-            onClick={() => router.push('/login')}
+        <div className="max-w-full w-full px-4 sm:px-6 py-2 flex justify-between items-center">
+          {/* Branding with ASL Logo */}
+          <motion.div
+            className="flex items-center space-x-2 sm:space-x-3 cursor-pointer"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            Login
-          </button>
-          <button
-            className="bg-gray-900 text-white px-2 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all shadow-md hover:bg-black hover:scale-105"
-            onClick={() => router.push('/signup')}
-          >
-            Sign Up
-          </button>
-        </>
-      )}
-    </div>
-  </div>
-</motion.header>
+            <img
+              src="/assets/logo-asl.png"
+              alt="ASL Logo"
+              className="h-8 sm:h-10 w-auto object-contain"
+            />
+          </motion.div>
 
+          {/* Action Buttons */}
+          <div className="flex space-x-1 sm:space-x-2">
+            {isLoggedIn && isAdmin && (
+              <button
+                className="bg-indigo-600 text-white px-2 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all shadow-md hover:bg-indigo-700 hover:scale-105"
+                onClick={() => router.push("/admin")}
+              >
+                Admin
+              </button>
+            )}
+            {isLoggedIn ? (
+              <button
+                className="bg-red-500 text-white px-2 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all shadow-md hover:bg-red-600 hover:scale-105"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            ) : (
+              <>
+                <button
+                  className="bg-gray-300 text-gray-900 px-2 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all shadow-md hover:bg-gray-400 hover:scale-105"
+                  onClick={() => router.push("/login")}
+                >
+                  Login
+                </button>
+                <button
+                  className="bg-gray-900 text-white px-2 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all shadow-md hover:bg-black hover:scale-105"
+                  onClick={() => router.push("/signup")}
+                >
+                  Sign Up
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </motion.header>
 
       <main className="w-full px-4 py-6 pb-24">
         <motion.div
