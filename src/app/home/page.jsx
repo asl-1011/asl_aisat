@@ -76,7 +76,7 @@ const Index = () => {
                 className="bg-indigo-600 text-white px-2 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all shadow-md hover:bg-indigo-700 hover:scale-105"
                 onClick={() => router.push("/admin")}
               >
-                Admin
+                update
               </button>
             )}
             {isLoggedIn ? (
