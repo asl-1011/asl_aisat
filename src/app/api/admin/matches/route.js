@@ -34,6 +34,31 @@ export async function GET(req) {
   }
 }
 
+export async function DELETE(req) {
+  try {
+    await connectDB();
+    
+    const { searchParams } = new URL(req.url);
+    const matchId = searchParams.get("matchId"); // ✅ Extract matchId from query
+
+    if (!matchId) {
+      return NextResponse.json({ error: "Match ID is required" }, { status: 400 });
+    }
+
+    console.log("Deleting Match ID:", matchId); // Debugging
+
+    const deletedMatch = await Match.findByIdAndDelete(matchId);
+    if (!deletedMatch) {
+      return NextResponse.json({ error: "Match not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Match deleted successfully" }, { status: 200 });
+  } catch (error) {
+    console.error("❌ Error deleting match:", error);
+    return NextResponse.json({ error: "Failed to delete match" }, { status: 500 });
+  }
+}
+
 // Add a new match
 export async function POST(req) {
   try {
