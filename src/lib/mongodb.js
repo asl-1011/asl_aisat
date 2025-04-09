@@ -58,3 +58,12 @@ export const getGFS = () => {
 
 // Store globally to prevent multiple reconnections
 global.mongoose = cached;
+// Export native MongoDB GridFSBucket instance directly
+export const getBucket = () => {
+  if (!cached.conn) {
+    throw new Error("❌ No MongoDB connection available to get bucket");
+  }
+
+  const db = mongoose.connection.db;
+  return new mongoose.mongo.GridFSBucket(db, { bucketName: "uploads" });
+};
