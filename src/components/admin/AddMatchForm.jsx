@@ -6,7 +6,8 @@ import {
   Trophy,
   ListTodo,
   MessageCircleMore,
-  Goal,
+  AlertTriangle,
+  Ban,
 } from "lucide-react";
 import {
   Select,
@@ -15,6 +16,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 
 const AddMatchForm = ({ teams, onMatchAdded }) => {
   const [newMatch, setNewMatch] = useState({
@@ -34,39 +43,63 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
     return teams.find((t) => t._id === teamId)?.players || [];
   };
 
-  const handleScorerChange = (team, index, field, value) => {
-    const scorers = [...newMatch[team]];
-    scorers[index] = {
-      ...scorers[index],
-      [field]: value,
-    };
-    setNewMatch({ ...newMatch, [team]: scorers });
+  const addScorer = (teamKey, player) => {
+    setNewMatch((prev) => ({
+      ...prev,
+      [teamKey]: [
+        ...prev[teamKey],
+        {
+          playerId: player._id,
+          goals: 1,
+          yellow: false,
+          red: false,
+        },
+      ],
+    }));
   };
 
-  const addScorerRow = (team) => {
-    setNewMatch({
-      ...newMatch,
-      [team]: [...newMatch[team], { playerId: "", goals: 1 }],
-    });
+  const updateScorer = (teamKey, index, field, value) => {
+    const updated = [...newMatch[teamKey]];
+    updated[index][field] = value;
+    setNewMatch((prev) => ({ ...prev, [teamKey]: updated }));
   };
 
-  const removeScorerRow = (team, index) => {
-    const updated = [...newMatch[team]];
+  const removeScorer = (teamKey, index) => {
+    const updated = [...newMatch[teamKey]];
     updated.splice(index, 1);
-    setNewMatch({ ...newMatch, [team]: updated });
+    setNewMatch((prev) => ({ ...prev, [teamKey]: updated }));
+  };
+
+  const toggleCard = (teamKey, index, cardType) => {
+    updateScorer(teamKey, index, cardType, !newMatch[teamKey][index][cardType]);
   };
 
   async function handleAddMatch(e) {
     e.preventDefault();
     if (loading) return;
 
+    // Basic Validations
     if (!newMatch.team1 || !newMatch.team2) {
       alert("Please select both teams.");
       return;
     }
+
     if (newMatch.team1 === newMatch.team2) {
       alert("A team cannot play against itself.");
       return;
+    }
+
+    // If match is finished, scores must be present and valid
+    if (newMatch.status === "Finished") {
+      if (
+        newMatch.team1_score === "" ||
+        newMatch.team2_score === "" ||
+        newMatch.team1_score < 0 ||
+        newMatch.team2_score < 0
+      ) {
+        alert("Please enter valid scores for both teams.");
+        return;
+      }
     }
 
     try {
@@ -111,81 +144,84 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
   );
 
   return (
-    <form className="p-4 bg-white shadow-md rounded-2xl border border-gray-200 w-full max-w-xl mx-auto">
+    <form
+      className="p-4 bg-white shadow-md rounded-2xl border border-gray-200 w-full max-w-xl mx-auto"
+      onSubmit={handleAddMatch}
+    >
       <h2 className="text-xl font-bold text-gray-800 mb-4">Add New Match</h2>
 
+      {/* Team Selection */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <InputWrapper icon={Users}>
-          <Select
-            value={newMatch.team1}
-            onValueChange={(value) =>
-              setNewMatch({ ...newMatch, team1: value, team1_scorers: [] })
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Team 1" />
-            </SelectTrigger>
-            <SelectContent>
-              {teams.map((team) => (
-                <SelectItem key={team._id} value={team._id}>
-                  {team.team_name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </InputWrapper>
+        {[["team1", "Team 1"], ["team2", "Team 2"]].map(([key, label]) => (
+          <InputWrapper key={key} icon={Users}>
+            <Select
+              value={newMatch[key]}
+              onValueChange={(value) =>
+                setNewMatch({ ...newMatch, [key]: value, [`${key}_scorers`]: [] })
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={`Select ${label}`} />
+              </SelectTrigger>
+              <SelectContent>
+                {teams.map((team) => (
+                  <SelectItem key={team._id} value={team._id}>
+                    {team.team_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </InputWrapper>
+        ))}
 
-        <InputWrapper icon={Users}>
-          <Select
-            value={newMatch.team2}
-            onValueChange={(value) =>
-              setNewMatch({ ...newMatch, team2: value, team2_scorers: [] })
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Team 2" />
-            </SelectTrigger>
-            <SelectContent>
-              {teams.map((team) => (
-                <SelectItem key={team._id} value={team._id}>
-                  {team.team_name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </InputWrapper>
+        {/* Show Scores Only If Finished */}
+        {newMatch.status === "Finished" && (
+          <>
+            <InputWrapper icon={Trophy}>
+              <input
+                type="number"
+                min="0"
+                placeholder="Team 1 Score"
+                value={newMatch.team1_score}
+                onChange={(e) =>
+                  setNewMatch({ ...newMatch, team1_score: e.target.value })
+                }
+                className="w-full outline-none text-gray-700"
+              />
+            </InputWrapper>
 
-        <InputWrapper icon={Trophy}>
-          <input
-            type="number"
-            placeholder="Team 1 Score"
-            value={newMatch.team1_score}
-            onChange={(e) =>
-              setNewMatch({ ...newMatch, team1_score: e.target.value })
-            }
-            className="w-full outline-none text-gray-700"
-          />
-        </InputWrapper>
-
-        <InputWrapper icon={Trophy}>
-          <input
-            type="number"
-            placeholder="Team 2 Score"
-            value={newMatch.team2_score}
-            onChange={(e) =>
-              setNewMatch({ ...newMatch, team2_score: e.target.value })
-            }
-            className="w-full outline-none text-gray-700"
-          />
-        </InputWrapper>
+            <InputWrapper icon={Trophy}>
+              <input
+                type="number"
+                min="0"
+                placeholder="Team 2 Score"
+                value={newMatch.team2_score}
+                onChange={(e) =>
+                  setNewMatch({ ...newMatch, team2_score: e.target.value })
+                }
+                className="w-full outline-none text-gray-700"
+              />
+            </InputWrapper>
+          </>
+        )}
       </div>
 
+      {/* Match Status */}
       <div className="mt-4">
         <InputWrapper icon={ListTodo}>
           <Select
             value={newMatch.status}
             onValueChange={(value) =>
-              setNewMatch({ ...newMatch, status: value })
+              setNewMatch((prev) => ({
+                ...prev,
+                status: value,
+                ...(value === "Upcoming" && {
+                  team1_score: "",
+                  team2_score: "",
+                  team1_scorers: [],
+                  team2_scorers: [],
+                }),
+              }))
             }
           >
             <SelectTrigger className="w-full">
@@ -199,6 +235,7 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
         </InputWrapper>
       </div>
 
+      {/* Description */}
       <div className="mt-4">
         <InputWrapper icon={MessageCircleMore}>
           <input
@@ -213,74 +250,105 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
         </InputWrapper>
       </div>
 
-      {["team1", "team2"].map((teamKey) => (
-        newMatch[teamKey] && (
-          <div className="mt-6" key={teamKey}>
-            <h3 className="font-semibold text-gray-700 mb-2">
-              {teamKey === "team1" ? "Team 1" : "Team 2"} Goal Scorers
-            </h3>
-            {newMatch[`${teamKey}_scorers`].map((scorer, index) => (
-              <div key={index} className="flex items-center gap-2 mb-2">
-                <InputWrapper icon={Goal}>
-                  <Select
-                    value={scorer.playerId}
-                    onValueChange={(value) =>
-                      handleScorerChange(
-                        `${teamKey}_scorers`,
-                        index,
-                        "playerId",
-                        value
-                      )
-                    }
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select Player" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getPlayers(newMatch[teamKey]).map((p) => (
-                        <SelectItem key={p._id} value={p._id}>
-                          {p.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </InputWrapper>
-                <input
-                  type="number"
-                  min="1"
-                  value={scorer.goals}
-                  className="w-20 border rounded-lg p-2 text-gray-700"
-                  onChange={(e) =>
-                    handleScorerChange(
-                      `${teamKey}_scorers`,
-                      index,
-                      "goals",
-                      parseInt(e.target.value) || 1
-                    )
-                  }
-                />
-                <button
-                  type="button"
-                  onClick={() => removeScorerRow(`${teamKey}_scorers`, index)}
-                >
-                  <XCircle className="w-5 h-5 text-red-500" />
-                </button>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={() => addScorerRow(`${teamKey}_scorers`)}
-              className="text-sm text-blue-600 mt-1"
-            >
-              + Add Scorer
-            </button>
-          </div>
-        )
-      ))}
+      {/* Scorers Section Only If Finished */}
+      {newMatch.status === "Finished" &&
+        ["team1", "team2"].map((teamKey) => {
+          const scorers = newMatch[`${teamKey}_scorers`];
+          const teamId = newMatch[teamKey];
+          if (!teamId) return null;
+          return (
+            <div key={teamKey} className="mt-6">
+              <h3 className="font-semibold text-gray-700 mb-2">
+                {teamKey === "team1" ? "Team 1" : "Team 2"} Scorers
+              </h3>
 
+              {scorers.map((scorer, index) => {
+                const player = getPlayers(teamId).find(
+                  (p) => p._id === scorer.playerId
+                );
+                return (
+                  <div key={index} className="flex items-center gap-3 mb-2">
+                    <span className="text-gray-700">{player?.name || "Unknown"}</span>
+                    <input
+                      type="number"
+                      min={1}
+                      value={scorer.goals}
+                      className="w-20 border rounded-md p-1"
+                      onChange={(e) =>
+                        updateScorer(
+                          `${teamKey}_scorers`,
+                          index,
+                          "goals",
+                          parseInt(e.target.value) || 1
+                        )
+                      }
+                    />
+                    <Badge
+                      variant={scorer.yellow ? "default" : "outline"}
+                      className="cursor-pointer"
+                      onClick={() =>
+                        toggleCard(`${teamKey}_scorers`, index, "yellow")
+                      }
+                    >
+                      <AlertTriangle className="w-4 h-4 mr-1 text-yellow-500" />
+                      Yellow
+                    </Badge>
+                    <Badge
+                      variant={scorer.red ? "default" : "outline"}
+                      className="cursor-pointer"
+                      onClick={() =>
+                        toggleCard(`${teamKey}_scorers`, index, "red")
+                      }
+                    >
+                      <Ban className="w-4 h-4 mr-1 text-red-500" />
+                      Red
+                    </Badge>
+                    <XCircle
+                      className="w-5 h-5 text-red-500 cursor-pointer"
+                      onClick={() =>
+                        removeScorer(`${teamKey}_scorers`, index)
+                      }
+                    />
+                  </div>
+                );
+              })}
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button
+                    type="button"
+                    className="text-sm text-blue-600 mt-2 underline"
+                  >
+                    + Add Scorer
+                  </button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Select Player</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid grid-cols-2 gap-2 mt-4">
+                    {getPlayers(teamId).map((player) => (
+                      <button
+                        key={player._id}
+                        type="button"
+                        onClick={() =>
+                          addScorer(`${teamKey}_scorers`, player)
+                        }
+                        className="text-left p-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
+                      >
+                        {player.name}
+                      </button>
+                    ))}
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          );
+        })}
+
+      {/* Submit Button */}
       <button
-        type="button"
-        onClick={handleAddMatch}
+        type="submit"
         disabled={loading}
         className={`mt-6 w-full ${
           loading ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
