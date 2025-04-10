@@ -3,6 +3,7 @@ import { Dialog } from "@headlessui/react";
 import Image from "next/image";
 import { FaFutbol, FaSquareFull } from "react-icons/fa";
 import confetti from "canvas-confetti";
+import { ScrollArea } from "@/components/ui/scroll-area"; // make sure this path is correct in your project
 
 // Get initials from a name
 const getInitials = (name) => {
@@ -164,53 +165,57 @@ const MatchDetailsModal = ({ matchId, isOpen, onClose }) => {
                     No players available
                   </p>
                 ) : (
-                  <ul className="space-y-2 max-h-60 overflow-y-auto pr-2">
-                    {players.map((player) => (
-                      <li
-                        key={player._id}
-                        className="flex items-center gap-4 bg-gray-50 p-3 rounded-lg shadow-sm"
-                      >
-                        {player.profilePic ? (
-                          <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-                            <Image
-                              src={`/api/teams/logo/${player.profilePic}`}
-                              alt={player.name}
-                              width={48}
-                              height={48}
-                              className="w-full h-full object-cover"
-                            />
+                  <ScrollArea className="h-60 pr-2 rounded-md">
+                    <ul className="space-y-2">
+                      {players.map((player) => (
+                        <li
+                          key={player._id}
+                          className="flex items-center gap-4 bg-gray-50 p-3 rounded-lg shadow-sm"
+                        >
+                          {player.profilePic ? (
+                            <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+                              <Image
+                                src={`/api/teams/logo/${player.profilePic}`}
+                                alt={player.name}
+                                width={48}
+                                height={48}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <PlaceholderAvatar name={player.name} size={48} />
+                          )}
+
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">
+                              {player.name}
+                            </p>
                           </div>
-                        ) : (
-                          <PlaceholderAvatar name={player.name} size={48} />
-                        )}
 
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">{player.name}</p>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          {player.goals > 0 && (
-                            <FaFutbol
-                              className="text-green-600"
-                              title={`${player.goals} Goals`}
-                            />
-                          )}
-                          {player.yellow_card && (
-                            <FaSquareFull
-                              className="text-yellow-400"
-                              title="Yellow Card"
-                            />
-                          )}
-                          {player.red_card && (
-                            <FaSquareFull
-                              className="text-red-600"
-                              title="Red Card"
-                            />
-                          )}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                          <div className="flex items-center gap-2">
+                            {player.goals > 0 && (
+                              <FaFutbol
+                                className="text-green-600"
+                                title={`${player.goals} Goals`}
+                              />
+                            )}
+                            {player.yellow_card && (
+                              <FaSquareFull
+                                className="text-yellow-400"
+                                title="Yellow Card"
+                              />
+                            )}
+                            {player.red_card && (
+                              <FaSquareFull
+                                className="text-red-600"
+                                title="Red Card"
+                              />
+                            )}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </ScrollArea>
                 )}
               </div>
             ))}
