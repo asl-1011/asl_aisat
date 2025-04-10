@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import {
   PlusCircle,
@@ -74,36 +75,47 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
     updateScorer(teamKey, index, cardType, !newMatch[teamKey][index][cardType]);
   };
 
+  const resetForm = () => {
+    setNewMatch({
+      team1: "",
+      team2: "",
+      team1_score: "",
+      team2_score: "",
+      team1_scorers: [],
+      team2_scorers: [],
+      status: "Upcoming",
+      description: "",
+    });
+  };
+
   async function handleAddMatch(e) {
     e.preventDefault();
     if (loading) return;
 
-    // Basic Validations
+    // Validations
     if (!newMatch.team1 || !newMatch.team2) {
-      alert("Please select both teams.");
-      return;
+      return alert("Please select both teams.");
     }
 
     if (newMatch.team1 === newMatch.team2) {
-      alert("A team cannot play against itself.");
-      return;
+      return alert("A team cannot play against itself.");
     }
 
-    // If match is finished, scores must be present and valid
     if (newMatch.status === "Finished") {
+      const s1 = parseInt(newMatch.team1_score);
+      const s2 = parseInt(newMatch.team2_score);
+
       if (
-        newMatch.team1_score === "" ||
-        newMatch.team2_score === "" ||
-        newMatch.team1_score < 0 ||
-        newMatch.team2_score < 0
+        isNaN(s1) || isNaN(s2) ||
+        s1 < 0 || s2 < 0
       ) {
-        alert("Please enter valid scores for both teams.");
-        return;
+        return alert("Please enter valid scores.");
       }
     }
 
     try {
       setLoading(true);
+
       const response = await fetch("/api/admin/matches", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -118,19 +130,10 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
 
       onMatchAdded?.(result.match);
       alert("✅ Match added successfully!");
-      setNewMatch({
-        team1: "",
-        team2: "",
-        team1_score: "",
-        team2_score: "",
-        team1_scorers: [],
-        team2_scorers: [],
-        status: "Upcoming",
-        description: "",
-      });
+      resetForm();
     } catch (err) {
-      console.error("Error adding match:", err);
-      alert(err.message);
+      console.error("Error:", err);
+      alert(err.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -145,19 +148,22 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
 
   return (
     <form
-      className="p-4 bg-white shadow-md rounded-2xl border border-gray-200 w-full max-w-xl mx-auto"
       onSubmit={handleAddMatch}
+      className="p-4 bg-white shadow-md rounded-2xl border border-gray-200 w-full max-w-xl mx-auto"
     >
       <h2 className="text-xl font-bold text-gray-800 mb-4">Add New Match</h2>
 
-      {/* Team Selection */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {[["team1", "Team 1"], ["team2", "Team 2"]].map(([key, label]) => (
           <InputWrapper key={key} icon={Users}>
             <Select
               value={newMatch[key]}
               onValueChange={(value) =>
-                setNewMatch({ ...newMatch, [key]: value, [`${key}_scorers`]: [] })
+                setNewMatch({
+                  ...newMatch,
+                  [key]: value,
+                  [`${key}_scorers`]: [],
+                })
               }
             >
               <SelectTrigger className="w-full">
@@ -174,7 +180,6 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
           </InputWrapper>
         ))}
 
-        {/* Show Scores Only If Finished */}
         {newMatch.status === "Finished" && (
           <>
             <InputWrapper icon={Trophy}>
@@ -189,7 +194,6 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
                 className="w-full outline-none text-gray-700"
               />
             </InputWrapper>
-
             <InputWrapper icon={Trophy}>
               <input
                 type="number"
@@ -206,7 +210,6 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
         )}
       </div>
 
-      {/* Match Status */}
       <div className="mt-4">
         <InputWrapper icon={ListTodo}>
           <Select
@@ -235,7 +238,6 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
         </InputWrapper>
       </div>
 
-      {/* Description */}
       <div className="mt-4">
         <InputWrapper icon={MessageCircleMore}>
           <input
@@ -250,12 +252,13 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
         </InputWrapper>
       </div>
 
-      {/* Scorers Section Only If Finished */}
+      {/* Scorers */}
       {newMatch.status === "Finished" &&
         ["team1", "team2"].map((teamKey) => {
           const scorers = newMatch[`${teamKey}_scorers`];
           const teamId = newMatch[teamKey];
           if (!teamId) return null;
+
           return (
             <div key={teamKey} className="mt-6">
               <h3 className="font-semibold text-gray-700 mb-2">
@@ -271,17 +274,17 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
                     <span className="text-gray-700">{player?.name || "Unknown"}</span>
                     <input
                       type="number"
-                      min={1}
+                      min="0"
                       value={scorer.goals}
-                      className="w-20 border rounded-md p-1"
                       onChange={(e) =>
                         updateScorer(
                           `${teamKey}_scorers`,
                           index,
                           "goals",
-                          parseInt(e.target.value) || 1
+                          parseInt(e.target.value) || 0
                         )
                       }
+                      className="w-20 border rounded-md p-1"
                     />
                     <Badge
                       variant={scorer.yellow ? "default" : "outline"}
@@ -346,7 +349,6 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
           );
         })}
 
-      {/* Submit Button */}
       <button
         type="submit"
         disabled={loading}
