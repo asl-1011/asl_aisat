@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, lazy, Suspense, useMemo } from "react";
+import { Home } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import useSWR from "swr";
@@ -69,21 +70,31 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Section */}
       <motion.header className="bg-white border-b sticky top-0 z-50 shadow-sm">
-        <div className="max-w-full w-full px-4 py-3 flex justify-between items-center">
-          <motion.div
-            className="flex items-center space-x-3"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <div className="bg-gradient-to-r from-gray-300 to-gray-100 rounded-xl h-10 w-10 flex items-center justify-center shadow-md">
-              <span className="font-bold text-sm text-gray-900">ASL</span>
-            </div>
-            <span className="text-lg font-bold text-gray-900">Admin Dashboard</span>
-          </motion.div>
-        </div>
-      </motion.header>
+  <div className="max-w-full w-full px-4 py-3 flex justify-between items-center">
+    <motion.div
+      className="flex items-center space-x-3"
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <div className="bg-gradient-to-r from-gray-300 to-gray-100 rounded-xl h-10 w-10 flex items-center justify-center shadow-md">
+        <span className="font-bold text-sm text-gray-900">ASL</span>
+      </div>
+      <span className="text-lg font-bold text-gray-900">Admin Dashboard</span>
+    </motion.div>
+
+    {/* Home Button */}
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={() => router.push("/home")}
+      className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded-lg shadow-sm transition"
+    >
+      <Home className="h-5 w-5" />
+      <span className="text-sm font-medium">Home</span>
+    </motion.button>
+  </div>
+</motion.header>
 
       {/* Main Content */}
       <main className="w-full px-4 py-6 pb-24">

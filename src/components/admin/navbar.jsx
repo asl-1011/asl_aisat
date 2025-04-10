@@ -5,7 +5,7 @@ import { IconShirtSport } from "@tabler/icons-react";
 
 // Navigation items array with icons
 const navItems = [
-  { name: "Home", icon: Home, path: "/admin" },
+  { name: "admin", icon: Home, path: "/admin" },
   { name: "Teams", icon: Shield, path: "/admin/teams" },
   { name: "Profile", icon: UserIcon, path: "/profile" },
 ];
