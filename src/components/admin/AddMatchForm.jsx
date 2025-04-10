@@ -25,6 +25,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input"; // ✅ Input component added
 
 const AddMatchForm = ({ teams, onMatchAdded }) => {
   const [newMatch, setNewMatch] = useState({
@@ -92,7 +93,6 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
     e.preventDefault();
     if (loading) return;
 
-    // Validations
     if (!newMatch.team1 || !newMatch.team2) {
       return alert("Please select both teams.");
     }
@@ -105,17 +105,13 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
       const s1 = parseInt(newMatch.team1_score);
       const s2 = parseInt(newMatch.team2_score);
 
-      if (
-        isNaN(s1) || isNaN(s2) ||
-        s1 < 0 || s2 < 0
-      ) {
+      if (isNaN(s1) || isNaN(s2) || s1 < 0 || s2 < 0) {
         return alert("Please enter valid scores.");
       }
     }
 
     try {
       setLoading(true);
-
       const response = await fetch("/api/admin/matches", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -139,13 +135,6 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
     }
   }
 
-  const InputWrapper = ({ icon: Icon, children }) => (
-    <div className="flex items-center border rounded-lg p-2 bg-white gap-2">
-      <Icon className="text-gray-400 w-5 h-5" />
-      {children}
-    </div>
-  );
-
   return (
     <form
       onSubmit={handleAddMatch}
@@ -154,8 +143,8 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
       <h2 className="text-xl font-bold text-gray-800 mb-4">Add New Match</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {[["team1", "Team 1"], ["team2", "Team 2"]].map(([key, label]) => (
-          <InputWrapper key={key} icon={Users}>
+        {["team1", "team2"].map((key) => (
+          <div key={key}>
             <Select
               value={newMatch[key]}
               onValueChange={(value) =>
@@ -167,7 +156,7 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
               }
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={`Select ${label}`} />
+                <SelectValue placeholder={`Select ${key === "team1" ? "Team 1" : "Team 2"}`} />
               </SelectTrigger>
               <SelectContent>
                 {teams.map((team) => (
@@ -177,82 +166,70 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
                 ))}
               </SelectContent>
             </Select>
-          </InputWrapper>
+          </div>
         ))}
 
         {newMatch.status === "Finished" && (
           <>
-            <InputWrapper icon={Trophy}>
-              <input
-                type="number"
-                min="0"
-                placeholder="Team 1 Score"
-                value={newMatch.team1_score}
-                onChange={(e) =>
-                  setNewMatch({ ...newMatch, team1_score: e.target.value })
-                }
-                className="w-full outline-none text-gray-700"
-              />
-            </InputWrapper>
-            <InputWrapper icon={Trophy}>
-              <input
-                type="number"
-                min="0"
-                placeholder="Team 2 Score"
-                value={newMatch.team2_score}
-                onChange={(e) =>
-                  setNewMatch({ ...newMatch, team2_score: e.target.value })
-                }
-                className="w-full outline-none text-gray-700"
-              />
-            </InputWrapper>
+            <Input
+              type="number"
+              min="0"
+              placeholder="Team 1 Score"
+              value={newMatch.team1_score}
+              onChange={(e) =>
+                setNewMatch({ ...newMatch, team1_score: e.target.value })
+              }
+            />
+            <Input
+              type="number"
+              min="0"
+              placeholder="Team 2 Score"
+              value={newMatch.team2_score}
+              onChange={(e) =>
+                setNewMatch({ ...newMatch, team2_score: e.target.value })
+              }
+            />
           </>
         )}
       </div>
 
       <div className="mt-4">
-        <InputWrapper icon={ListTodo}>
-          <Select
-            value={newMatch.status}
-            onValueChange={(value) =>
-              setNewMatch((prev) => ({
-                ...prev,
-                status: value,
-                ...(value === "Upcoming" && {
-                  team1_score: "",
-                  team2_score: "",
-                  team1_scorers: [],
-                  team2_scorers: [],
-                }),
-              }))
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Upcoming">Upcoming</SelectItem>
-              <SelectItem value="Finished">Finished</SelectItem>
-            </SelectContent>
-          </Select>
-        </InputWrapper>
+        <Select
+          value={newMatch.status}
+          onValueChange={(value) =>
+            setNewMatch((prev) => ({
+              ...prev,
+              status: value,
+              ...(value === "Upcoming" && {
+                team1_score: "",
+                team2_score: "",
+                team1_scorers: [],
+                team2_scorers: [],
+              }),
+            }))
+          }
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Upcoming">Upcoming</SelectItem>
+            <SelectItem value="Finished">Finished</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="mt-4">
-        <InputWrapper icon={MessageCircleMore}>
-          <input
-            type="text"
-            placeholder="Description"
-            value={newMatch.description}
-            onChange={(e) =>
-              setNewMatch({ ...newMatch, description: e.target.value })
-            }
-            className="w-full outline-none text-gray-700"
-          />
-        </InputWrapper>
+        <Input
+          type="text"
+          placeholder="Description"
+          value={newMatch.description}
+          onChange={(e) =>
+            setNewMatch({ ...newMatch, description: e.target.value })
+          }
+        />
       </div>
 
-      {/* Scorers */}
       {newMatch.status === "Finished" &&
         ["team1", "team2"].map((teamKey) => {
           const scorers = newMatch[`${teamKey}_scorers`];
@@ -272,7 +249,7 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
                 return (
                   <div key={index} className="flex items-center gap-3 mb-2">
                     <span className="text-gray-700">{player?.name || "Unknown"}</span>
-                    <input
+                    <Input
                       type="number"
                       min="0"
                       value={scorer.goals}
@@ -284,7 +261,7 @@ const AddMatchForm = ({ teams, onMatchAdded }) => {
                           parseInt(e.target.value) || 0
                         )
                       }
-                      className="w-20 border rounded-md p-1"
+                      className="w-20"
                     />
                     <Badge
                       variant={scorer.yellow ? "default" : "outline"}
