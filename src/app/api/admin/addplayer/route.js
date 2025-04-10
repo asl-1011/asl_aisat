@@ -21,7 +21,8 @@ const uploadImage = async (image, gfs) => {
     return uploadStream.id.toString();
 };
 
-// ✅ [POST] Add New Player to the Team and Update Team's Players
+
+//post 
 export async function POST(req) {
     try {
         console.log("📥 Received request to add a new player");
@@ -41,6 +42,12 @@ export async function POST(req) {
         const gfs = getGFS();
         if (!gfs) return NextResponse.json({ error: "GridFS initialization failed" }, { status: 500 });
 
+        // ✅ Check if player with the same name already exists in the team
+        const existingPlayer = await Player.findOne({ name, team: new ObjectId(teamId) });
+        if (existingPlayer) {
+            return NextResponse.json({ error: "A player with the same name already exists in this team" }, { status: 409 });
+        }
+
         // Upload profile picture if provided
         const profilePicId = profilePic ? await uploadImage(profilePic, gfs) : null;
 
@@ -48,14 +55,14 @@ export async function POST(req) {
         const newPlayer = await Player.create({
             name,
             position,
-            profilePic: profilePicId,  // Store the uploaded profile picture's GridFS ID
-            team: new ObjectId(teamId),  // Ensure the team ID is an ObjectId
+            profilePic: profilePicId,
+            team: new ObjectId(teamId),
         });
 
         // Update the team by adding the new player's ID to the team's players array
         const updatedTeam = await Team.findByIdAndUpdate(
             teamId,
-            { $push: { players: newPlayer._id } },  // Push player ID into the team's players array
+            { $push: { players: newPlayer._id } },
             { new: true }
         );
 

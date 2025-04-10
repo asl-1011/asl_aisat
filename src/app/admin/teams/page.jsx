@@ -24,6 +24,7 @@ export default function AdminDashboard() {
     players: [],
   };
   const [newTeam, setNewTeam] = useState(initialTeamState);
+  const [errorMsg, setErrorMsg] = useState("");
   const [newPlayer, setNewPlayer] = useState({
     name: "",
     position: "",
@@ -131,31 +132,40 @@ export default function AdminDashboard() {
 
   const handleAddPlayer = async () => {
     const formData = new FormData();
-    formData.append("name", newPlayer.name);
+    formData.append("name", newPlayer.name.trim());
     formData.append("position", newPlayer.position);
     formData.append("team", newPlayer.team);
-
+  
     if (newPlayer.photo) {
       formData.append("profilePic", newPlayer.photo);
     }
-
+  
     try {
       const res = await fetch("/api/admin/addplayer", {
         method: "POST",
         body: formData,
       });
-
-      if (!res.ok) throw new Error("Failed to add player");
-
+  
+      if (!res.ok) {
+        if (res.status === 409) {
+          alert("⚠️ Player already exists in this team.");
+          return;
+        }
+        const errorData = await res.json();
+        console.error("Server Error:", errorData);
+        alert("❌ Failed to add player: " + (errorData.error || "Unknown error"));
+        return;
+      }
+  
       const data = await res.json();
       setPlayers([...players, data]);
-
       closeModal();
     } catch (err) {
       console.error("Error adding player:", err);
+      alert("❌ Something went wrong while adding the player.");
     }
   };
-
+  
   const handleDeletePlayer = async (playerId) => {
     if (!confirm("Are you sure you want to delete this player?")) return;
 
