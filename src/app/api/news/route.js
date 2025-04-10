@@ -1,29 +1,35 @@
-"use server";
+// src/app/api/news/route.js
 
-import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
-import News from "@/models/News";
-
-// 📌 GET: Fetch all news (Public Read-Only)
 export async function GET() {
-  try {
-    await connectDB();
-    const news = await News.find().sort({ createdAt: -1 });
+  const url = "https://www.indiansuperleague.com/apiv4/listing?entities=5,1&otherent=&exclent=&pgnum=2&inum=12&pgsize=12";
 
-    return NextResponse.json(news.length ? news : { message: "No news available" }, {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      return new Response(JSON.stringify({ error: "Failed to fetch data" }), {
+        status: response.status,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const data = await response.json();
+    const items = data?.content?.items || [];
+
+    const transformedItems = items.map(item => ({
+      _id: item.asset_id,
+      imageUrl: "https://www.indiansuperleague.com/static-assets/waf-images/" + item.image_path + item.image_file_name + "?v=102.67&w=600",
+      title: item.asset_title,
+      description: item.short_desc,
+    }));
+
+    return new Response(JSON.stringify(transformedItems), {
       status: 200,
-      headers: { 
-        "Access-Control-Allow-Origin": "*", // Public API
-        "Cache-Control": "public, max-age=60" // Cache for 1 minute
-      }
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return new Response(JSON.stringify({ error: "Something went wrong", details: error.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
-
-// 📌 Block all write operations
-export async function POST() { return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 }); }
-export async function PUT() { return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 }); }
-export async function DELETE() { return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 }); }
-export async function PATCH() { return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 }); }

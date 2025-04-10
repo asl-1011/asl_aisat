@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 const MatchCard = ({
   team1 = "Unknown Team",
@@ -17,6 +18,7 @@ const MatchCard = ({
   const [votes1, setVotes1] = useState(poll.votes1 || 0);
   const [votes2, setVotes2] = useState(poll.votes2 || 0);
   const [voted, setVoted] = useState(false);
+  const [showPoll, setShowPoll] = useState(false);
 
   useEffect(() => {
     setVotes1(poll.votes1 || 0);
@@ -53,7 +55,9 @@ const MatchCard = ({
 
         <div className="flex flex-col items-center">
           {status !== "Upcoming" && (
-            <span className="text-2xl font-bold text-gray-800">{team1Score} - {team2Score}</span>
+            <span className="text-2xl font-bold text-gray-800">
+              {team1Score} - {team2Score}
+            </span>
           )}
           <span className="text-sm text-gray-600">{status}</span>
         </div>
@@ -65,6 +69,71 @@ const MatchCard = ({
       </div>
 
       <p className="text-center text-sm text-gray-600 mt-3">{description}</p>
+
+      <div className="mt-4">
+        <button
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-200 rounded-full w-full text-blue-500"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowPoll(!showPoll);
+          }}
+        >
+          {showPoll ? "Hide Poll" : <span>Vote Now</span>}
+          {showPoll ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+        </button>
+
+        {showPoll && (
+          <div className="mt-3 space-y-4">
+            <div className="flex justify-between items-center">
+              <button
+                className={`px-4 py-2 rounded-full font-semibold transition-all duration-300 ${
+                  voted ? "bg-gray-400 text-white cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleVote("votes1");
+                }}
+                disabled={voted}
+              >
+                Vote {team1}
+              </button>
+              <span className="text-sm font-semibold text-gray-700">
+                Votes: {votes1} ({percent1}%)
+              </span>
+            </div>
+            <div className="relative w-full h-3 bg-gray-200 rounded-full">
+              <div
+                className="absolute left-0 h-3 bg-blue-500 rounded-full"
+                style={{ width: `${percent1}%` }}
+              />
+            </div>
+
+            <div className="flex justify-between items-center">
+              <button
+                className={`px-4 py-2 rounded-full font-semibold transition-all duration-300 ${
+                  voted ? "bg-gray-400 text-white cursor-not-allowed" : "bg-red-600 text-white hover:bg-red-700"
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleVote("votes2");
+                }}
+                disabled={voted}
+              >
+                Vote {team2}
+              </button>
+              <span className="text-sm font-semibold text-gray-700">
+                Votes: {votes2} ({percent2}%)
+              </span>
+            </div>
+            <div className="relative w-full h-3 bg-gray-200 rounded-full">
+              <div
+                className="absolute left-0 h-3 bg-red-500 rounded-full"
+                style={{ width: `${percent2}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
