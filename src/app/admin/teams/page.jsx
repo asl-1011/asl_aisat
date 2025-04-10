@@ -156,6 +156,23 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeletePlayer = async (playerId) => {
+    if (!confirm("Are you sure you want to delete this player?")) return;
+
+    try {
+      const res = await fetch(`/api/admin/players/${playerId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Failed to delete player");
+
+      setPlayers(players.filter((p) => p._id !== playerId));
+      setSelectedPlayers(selectedPlayers.filter((p) => p._id !== playerId));
+    } catch (err) {
+      console.error("Error deleting player:", err);
+    }
+  };
+
   if (loading)
     return (
       <div className="text-center text-white text-xl p-10">
@@ -300,10 +317,16 @@ export default function AdminDashboard() {
                   <X size={24} />
                 </button>
               </div>
-              <ul className="list-disc pl-4 text-sm">
+              <ul className="text-sm space-y-2">
                 {selectedPlayers.map((player) => (
-                  <li key={player._id} className="mb-1">
-                    {player.name} - {player.position}
+                  <li key={player._id} className="flex justify-between items-center">
+                    <span>{player.name} - {player.position}</span>
+                    <button
+                      onClick={() => handleDeletePlayer(player._id)}
+                      className="text-red-500 hover:text-red-700 text-xs"
+                    >
+                      Delete
+                    </button>
                   </li>
                 ))}
               </ul>
