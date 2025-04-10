@@ -9,9 +9,27 @@ const MatchSchema = new mongoose.Schema({
   description: { type: String },
   playersTeam1: [{ type: mongoose.Schema.Types.ObjectId, ref: "Player" }],
   playersTeam2: [{ type: mongoose.Schema.Types.ObjectId, ref: "Player" }],
+
+  team1_scorers: [
+    {
+      playerId: { type: mongoose.Schema.Types.ObjectId, required: true },
+      goals: { type: Number, default: 0 },
+      yellow: { type: Boolean, default: false },
+      red: { type: Boolean, default: false },
+    }
+  ],
+  team2_scorers: [
+    {
+      playerId: { type: mongoose.Schema.Types.ObjectId, required: true },
+      goals: { type: Number, default: 0 },
+      yellow: { type: Boolean, default: false },
+      red: { type: Boolean, default: false },
+    }
+  ],
+
   poll: {
-    votes1: { type: Number, default: 0 }, // Vote count for option 1
-    votes2: { type: Number, default: 0 }, // Vote count for option 2
+    votes1: { type: Number, default: 0 }, 
+    votes2: { type: Number, default: 0 }, 
   },
 }, { 
   toJSON: { virtuals: true },

@@ -9,6 +9,8 @@ const PlayerSchema = new mongoose.Schema({
         goals: { type: Number, default: 0 },
         assists: { type: Number, default: 0 },
         matchesPlayed: { type: Number, default: 0 },
+        yellowCards: { type: Number, default: 0 },
+        redCards: { type: Number, default: 0 },
     },
 });
 

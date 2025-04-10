@@ -17,7 +17,9 @@ const TeamSchema = new mongoose.Schema({
   losses: { type: Number, default: 0 },
   draws: { type: Number, default: 0 },
   goals_scored: { type: Number, default: 0 },
-  goals_conceded: { type: Number, default: 0 }
+  goals_conceded: { type: Number, default: 0 },
+  yellowCards: { type: Number, default: 0 },
+  redCards: { type: Number, default: 0 },
 });
 
 // Ensure model registration
