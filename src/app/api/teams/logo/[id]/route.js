@@ -1,54 +1,52 @@
 "use server";
 
-import { NextResponse } from "next/server";
 import { connectDB, getGFS } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
-import { Readable } from "stream";
 
-export async function GET(req, context) {
+export async function GET(req, { params }) {
     try {
         await connectDB();
         const gfs = getGFS();
         if (!gfs) throw new Error("❌ GridFS initialization failed");
 
-        // ✅ Await params properly
-        const { params } = context;
-        if (!params) {
-            return NextResponse.json({ error: "Params not found" }, { status: 400 });
-        }
-
         const { id } = params;
         if (!id || !ObjectId.isValid(id)) {
-            return NextResponse.json({ error: "Invalid file ID" }, { status: 400 });
+            return new Response(JSON.stringify({ error: "Invalid file ID" }), {
+                status: 400,
+                headers: { "Content-Type": "application/json" },
+            });
         }
 
-        // Find the image metadata
-        const fileCursor = gfs.find({ _id: new ObjectId(id) });
-        const files = await fileCursor.toArray();
+        const files = await gfs.find({ _id: new ObjectId(id) }).toArray();
         if (!files.length) {
-            return NextResponse.json({ error: "File not found" }, { status: 404 });
+            return new Response(JSON.stringify({ error: "File not found" }), {
+                status: 404,
+                headers: { "Content-Type": "application/json" },
+            });
         }
 
         const file = files[0];
         const downloadStream = gfs.openDownloadStream(file._id);
 
-        // Convert stream into a readable response
-        const readableStream = new ReadableStream({
-            start(controller) {
-                downloadStream.on("data", (chunk) => controller.enqueue(chunk));
-                downloadStream.on("end", () => controller.close());
-                downloadStream.on("error", (err) => controller.error(err));
-            },
-        });
+        const { readable, writable } = new TransformStream();
+        const writer = writable.getWriter();
 
-        return new NextResponse(readableStream, {
+        downloadStream.on("data", (chunk) => writer.write(chunk));
+        downloadStream.on("end", () => writer.close());
+        downloadStream.on("error", (err) => writer.abort(err));
+
+        return new Response(readable, {
             headers: {
-                "Content-Type": file.contentType,
+                "Content-Type": file.contentType || "application/octet-stream",
                 "Cache-Control": "public, max-age=31536000",
             },
         });
+
     } catch (error) {
         console.error("❌ Image retrieval failed:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return new Response(JSON.stringify({ error: error.message }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+        });
     }
 }
